@@ -6,6 +6,7 @@ import { fileURLToPath } from 'url';
 import authRoutes from './routes/auth.js';
 import todoRoutes from './routes/todos.js';
 import { logger } from './utils/logger.js';
+import { requestLogger } from './middleware/requestLogger.js';
 
 dotenv.config();
 
@@ -73,6 +74,9 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Request logging middleware (after body parsers, before routes)
+app.use(requestLogger);
 
 // Health check endpoint
 app.get('/health', (req, res) => {

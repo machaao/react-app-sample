@@ -1,3 +1,5 @@
+import { clientLogger } from './logger.js';
+
 const API_URL = import.meta.env.VITE_API_URL || window.location.origin;
 
 class ApiClient {
@@ -21,8 +23,13 @@ class ApiClient {
   }
 
   async request(endpoint, options = {}) {
+    // Generate correlation ID for this request
+    const correlationId = clientLogger.generateCorrelationId();
+    const startTime = Date.now();
+    
     const headers = {
       'Content-Type': 'application/json',
+      'X-Correlation-ID': correlationId,
       ...options.headers
     };
 
@@ -35,32 +42,91 @@ class ApiClient {
       headers
     };
 
+    // Log the API request
+    clientLogger.logApiCall(
+      options.method || 'GET',
+      endpoint,
+      config,
+      correlationId
+    );
+
     try {
       const response = await fetch(`${this.baseURL}${endpoint}`, config);
+      const duration = Date.now() - startTime;
       
       // Handle network errors
       if (!response.ok) {
         let errorMessage = 'Request failed';
+        let errorData = null;
+        
         try {
-          const data = await response.json();
-          errorMessage = data.message || errorMessage;
+          errorData = await response.json();
+          errorMessage = errorData.message || errorMessage;
         } catch (e) {
           // Response is not JSON
           errorMessage = `HTTP ${response.status}: ${response.statusText}`;
         }
+        
+        // Log error response
+        clientLogger.logApiResponse(
+          options.method || 'GET',
+          endpoint,
+          response.status,
+          duration,
+          correlationId,
+          null,
+          new Error(errorMessage)
+        );
+        
         throw new Error(errorMessage);
       }
 
       const data = await response.json();
+      
+      // Log successful response
+      clientLogger.logApiResponse(
+        options.method || 'GET',
+        endpoint,
+        response.status,
+        duration,
+        correlationId,
+        data
+      );
+      
       return data;
     } catch (error) {
+      const duration = Date.now() - startTime;
+      
       // Network error or fetch failed
       if (error.name === 'TypeError' && error.message.includes('fetch')) {
-        console.error('Network Error: Unable to connect to server');
-        throw new Error('Unable to connect to server. Please check your connection.');
+        const networkError = new Error('Unable to connect to server. Please check your connection.');
+        
+        clientLogger.logApiResponse(
+          options.method || 'GET',
+          endpoint,
+          0,
+          duration,
+          correlationId,
+          null,
+          networkError
+        );
+        
+        throw networkError;
       }
       
-      console.error('API Error:', error.message);
+      // Log other errors if not already logged
+      if (!error.message.includes('Request failed')) {
+        clientLogger.logApiResponse(
+          options.method || 'GET',
+          endpoint,
+          0,
+          duration,
+          correlationId,
+          null,
+          error
+        );
+      }
+      
       throw error;
     }
   }
