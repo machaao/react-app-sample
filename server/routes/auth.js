@@ -4,6 +4,23 @@ import { logger } from '../utils/logger.js';
 
 const router = express.Router();
 
+// Helper function to create session
+async function createSession(userId, userData) {
+  const sessionKey = `session:${userId}`;
+  const sessionData = {
+    userId,
+    email: userData.email,
+    createdAt: new Date().toISOString(),
+    lastActivity: new Date().toISOString()
+  };
+  
+  await machaaoClient.setAppData(sessionKey, sessionData, {
+    ttl: 30 * 24 * 60 * 60 // 30 days
+  });
+  
+  return sessionData;
+}
+
 // Register new user
 router.post('/register', async (req, res) => {
   try {
@@ -22,6 +39,11 @@ router.post('/register', async (req, res) => {
       email,
       password
     });
+
+    // Create session in app-data
+    if (result.success && result.data?.user_id) {
+      await createSession(result.data.user_id, { email });
+    }
 
     logger.info('User registered:', email);
 
@@ -48,6 +70,11 @@ router.post('/login', async (req, res) => {
     }
 
     const result = await machaaoClient.login({ email, password });
+
+    // Create session in app-data
+    if (result.success && result.data?.user_id) {
+      await createSession(result.data.user_id, { email });
+    }
 
     logger.info('User logged in:', email);
 
