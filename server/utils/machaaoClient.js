@@ -67,9 +67,16 @@ class MachaaoClient {
   }
 
   async setAppData(key, value, options = {}) {
+    const requestBody = { value };
+    
+    // Add optional parameters if provided
+    if (options.ttl) {
+      requestBody.ttl = options.ttl;
+    }
+    
     return this.request(`/developers/apps/${MACHAAO_APP_ID}/app-data/${encodeURIComponent(key)}`, {
       method: 'PUT',
-      body: JSON.stringify({ value, ...options }),
+      body: JSON.stringify(requestBody),
       useDeveloperToken: true
     });
   }
