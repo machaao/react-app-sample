@@ -20,6 +20,26 @@ if [ ! -f ".env" ]; then
     fi
 fi
 
+# Load environment variables from .env file
+if [ -f ".env" ]; then
+    echo "📋 Loading environment variables from .env..."
+    # Export variables from .env file (skip comments and empty lines)
+    while IFS='=' read -r key value; do
+        # Skip comments and empty lines
+        case "$key" in
+            ''|'#'*) continue ;;
+        esac
+        # Remove leading/trailing whitespace and quotes from value
+        value=$(echo "$value" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' -e 's/^"//' -e 's/"$//' -e "s/^'//" -e "s/'$//")
+        # Export the variable
+        export "$key=$value"
+    done < .env
+    echo "✅ Environment variables loaded"
+else
+    echo "⚠️  No .env file found, using system environment variables"
+fi
+echo ""
+
 # Function to check if port is available
 check_port() {
     port=$1
