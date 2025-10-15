@@ -4,12 +4,11 @@ function Stats({ todos }) {
   const total = todos.length;
   const completed = todos.filter(todo => todo.completed).length;
   const active = total - completed;
-  const completionRate = total > 0 ? Math.round((completed / total) * 100) : 0;
 
   const stats = [
-    { label: 'Total', value: total, color: 'from-blue-500 to-blue-600', icon: '📋' },
-    { label: 'Active', value: active, color: 'from-orange-500 to-orange-600', icon: '⚡' },
-    { label: 'Completed', value: completed, color: 'from-green-500 to-green-600', icon: '✓' },
+    { label: 'Total', value: total, gradient: 'from-blue-500 to-blue-600', icon: '📋' },
+    { label: 'Active', value: active, gradient: 'from-orange-500 to-orange-600', icon: '⚡' },
+    { label: 'Completed', value: completed, gradient: 'from-green-500 to-green-600', icon: '✓' },
   ];
 
   return (
@@ -25,11 +24,7 @@ function Stats({ todos }) {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-gray-600 text-sm font-medium">{stat.label}</p>
-              <p className="text-3xl font-bold mt-1 bg-gradient-to-r bg-clip-text text-transparent" style={{
-                backgroundImage: `linear-gradient(to right, var(--tw-gradient-stops))`,
-                '--tw-gradient-from': stat.color.split(' ')[0].replace('from-', ''),
-                '--tw-gradient-to': stat.color.split(' ')[1].replace('to-', '')
-              }}>
+              <p className={`text-3xl font-bold mt-1 bg-gradient-to-r ${stat.gradient} bg-clip-text text-transparent`}>
                 {stat.value}
               </p>
             </div>
