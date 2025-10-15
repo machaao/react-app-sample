@@ -1,0 +1,858 @@
+{
+  "plan_id": "request-logging-implementation-7a3f9c",
+  "overview": "Implement comprehensive request logging throughout the application, including HTTP request/response logging on the server side and API call logging on the client side, with structured log formats and configurable log levels",
+  "requirements": [
+    "Log all incoming HTTP requests with method, path, status code, and response time",
+    "Log all API calls from the client with request details and responses",
+    "Use existing logger utility (server/utils/logger.js) as foundation",
+    "Include request/response bodies for debugging (with sensitive data filtering)",
+    "Add correlation IDs to track requests across client and server",
+    "Configurable log levels via environment variables",
+    "Structured JSON log format for easy parsing",
+    "Performance impact must be minimal"
+  ],
+  "implementation_strategy": "Extend the existing logger utility, create middleware for Express server to log all requests, add interceptors to the client-side API utility to log all outgoing requests and responses, implement correlation ID generation and propagation, and add environment-based configuration for log levels",
+  "steps": [
+    {
+      "id": "step_1",
+      "title": "Enhance Logger Utility with Request Logging Capabilities",
+      "description": "Extend server/utils/logger.js to include request-specific logging methods, add correlation ID support, implement sensitive data filtering, and add structured formatting for HTTP requests",
+      "files_affected": [
+        "server/utils/logger.js"
+      ],
+      "estimated_time_minutes": 15,
+      "completion_criteria": "Logger has methods for logRequest, logResponse, logError with correlation ID support and sensitive data filtering",
+      "dependencies": [],
+      "step_type": "implementation"
+    },
+    {
+      "id": "step_2",
+      "title": "Create Request Logging Middleware for Express",
+      "description": "Create server/middleware/requestLogger.js that logs all incoming requests with method, path, headers, body, and generates correlation IDs. Log responses with status code, response time, and body",
+      "files_affected": [
+        "server/middleware/requestLogger.js"
+      ],
+      "estimated_time_minutes": 20,
+      "completion_criteria": "Middleware logs request start, request end with timing, handles errors, and attaches correlation IDs to requests",
+      "dependencies": [
+        "step_1"
+      ],
+      "step_type": "implementation"
+    },
+    {
+      "id": "step_3",
+      "title": "Integrate Request Logging Middleware into Server",
+      "description": "Add the request logging middleware to server/index.js before route handlers, configure it to exclude health check endpoints if needed, and ensure it works with existing auth middleware",
+      "files_affected": [
+        "server/index.js"
+      ],
+      "estimated_time_minutes": 10,
+      "completion_criteria": "All HTTP requests are logged with correlation IDs, timing information, and request/response details",
+      "dependencies": [
+        "step_2"
+      ],
+      "step_type": "integration"
+    },
+    {
+      "id": "step_4",
+      "title": "Add Request Logging to Route Handlers",
+      "description": "Update server/routes/auth.js and server/routes/todos.js to log business logic events, errors, and important operations using the enhanced logger with correlation IDs from request context",
+      "files_affected": [
+        "server/routes/auth.js",
+        "server/routes/todos.js"
+      ],
+      "estimated_time_minutes": 15,
+      "completion_criteria": "All route handlers log key operations, errors include correlation IDs, and business events are tracked",
+      "dependencies": [
+        "step_3"
+      ],
+      "step_type": "implementation"
+    },
+    {
+      "id": "step_5",
+      "title": "Implement Client-Side API Request Logging",
+      "description": "Enhance src/utils/api.js to log all outgoing API requests and responses, include correlation ID headers, log errors with full context, and add configurable log levels for development vs production",
+      "files_affected": [
+        "src/utils/api.js"
+      ],
+      "estimated_time_minutes": 15,
+      "completion_criteria": "All API calls are logged with request details, response status, timing, and correlation IDs that match server logs",
+      "dependencies": [
+        "step_3"
+      ],
+      "step_type": "implementation"
+    },
+    {
+      "id": "step_6",
+      "title": "Add Environment Configuration for Logging",
+      "description": "Update .env and .env.example with logging configuration variables (LOG_LEVEL, LOG_REQUESTS, LOG_RESPONSE_BODY) and update server to read these configurations",
+      "files_affected": [
+        ".env",
+        ".env.example",
+        "server/index.js"
+      ],
+      "estimated_time_minutes": 10,
+      "completion_criteria": "Logging behavior is configurable via environment variables, defaults are set appropriately for development and production",
+      "dependencies": [
+        "step_5"
+      ],
+      "step_type": "implementation"
+    },
+    {
+      "id": "step_7",
+      "title": "Update Documentation with Logging Information",
+      "description": "Update README.md to document the logging system, environment variables for configuration, log format structure, and how to use correlation IDs for debugging",
+      "files_affected": [
+        "README.md"
+      ],
+      "estimated_time_minutes": 10,
+      "completion_criteria": "Documentation clearly explains logging features, configuration options, and debugging workflows",
+      "dependencies": [
+        "step_6"
+      ],
+      "step_type": "documentation"
+    }
+  ],
+  "technical_specifications": {
+    "files_to_create": [
+      "server/middleware/requestLogger.js"
+    ],
+    "files_to_modify": [
+      "server/utils/logger.js",
+      "server/index.js",
+      "server/routes/auth.js",
+      "server/routes/todos.js",
+      "src/utils/api.js",
+      ".env",
+      ".env.example",
+      "README.md"
+    ],
+    "dependencies": [
+      "uuid"
+    ],
+    "apis_to_integrate": [],
+    "configuration_files": [
+      ".env",
+      ".env.example"
+    ]
+  },
+  "risk_assessment": {
+    "potential_challenges": [
+      "Performance overhead from excessive logging",
+      "Sensitive data exposure in logs (passwords, tokens)",
+      "Log volume in production environments",
+      "Correlation ID propagation across async operations"
+    ],
+    "mitigation_strategies": [
+      "Implement configurable log levels to reduce verbosity in production",
+      "Add sensitive data filtering to redact passwords, tokens, and PII",
+      "Use conditional logging based on environment variables",
+      "Attach correlation IDs to request objects and pass through context"
+    ],
+    "fallback_options": [
+      "Disable request body logging if performance issues occur",
+      "Use sampling for high-traffic endpoints",
+      "Implement log rotation and retention policies"
+    ]
+  },
+  "success_criteria": [
+    "All HTTP requests are logged with method, path, status, and timing",
+    "Client-side API calls are logged with correlation IDs matching server logs",
+    "Sensitive data is filtered from logs",
+    "Logging is configurable via environment variables",
+    "Documentation explains logging system and configuration",
+    "No significant performance degradation",
+    "Correlation IDs enable end-to-end request tracing"
+  ],
+  "timeline_estimate_minutes": 95,
+  "created_timestamp": "2025-01-10T14:23:00.000000",
+  "status": "ACTIVE",
+  "progress_tracking_enabled": true,
+  "plan_type": "AI-Optimized Implementation Plan",
+  "metadata": {
+    "created": "2025-10-15T10:31:30.975184",
+    "user_request": "add logging to the project for requests",
+    "progress_aware": true,
+    "plan_id": "request-logging-implementation-7a3f9c",
+    "step_count": 7,
+    "estimated_duration_minutes": 95,
+    "last_progress_update": "2025-10-15T10:36:10.029026",
+    "persistence_version": "2.0",
+    "format_version": "2.0",
+    "supports_step_details": true,
+    "archived": true,
+    "archive_date": "2025-10-15T10:36:54.708514",
+    "archive_reason": "completed"
+  },
+  "progress_tracking": {
+    "plan_id": "request-logging-implementation-7a3f9c",
+    "steps": {
+      "request-logging-implementation-7a3f9c_step_1": {
+        "id": "request-logging-implementation-7a3f9c_step_1",
+        "title": "Enhance Logger Utility with Request Logging Capabilities",
+        "description": "Extend server/utils/logger.js to include request-specific logging methods, add correlation ID support, implement sensitive data filtering, and add structured formatting for HTTP requests",
+        "state": "in_progress",
+        "start_time": "2025-10-15T10:31:30.978478",
+        "end_time": null,
+        "error_message": null,
+        "dependencies": [],
+        "estimated_duration": 15,
+        "actual_duration": null,
+        "progress_percentage": 80,
+        "metadata": {
+          "extracted_from_json": true,
+          "original_json_data": {
+            "id": "step_1",
+            "title": "Enhance Logger Utility with Request Logging Capabilities",
+            "description": "Extend server/utils/logger.js to include request-specific logging methods, add correlation ID support, implement sensitive data filtering, and add structured formatting for HTTP requests",
+            "files_affected": [
+              "server/utils/logger.js"
+            ],
+            "estimated_time_minutes": 15,
+            "completion_criteria": "Logger has methods for logRequest, logResponse, logError with correlation ID support and sensitive data filtering",
+            "dependencies": [],
+            "step_type": "implementation"
+          },
+          "original_files_affected": [
+            "server/utils/logger.js"
+          ],
+          "original_step_data": {
+            "id": "request-logging-implementation-7a3f9c_step_1",
+            "title": "Enhance Logger Utility with Request Logging Capabilities",
+            "description": "Extend server/utils/logger.js to include request-specific logging methods, add correlation ID support, implement sensitive data filtering, and add structured formatting for HTTP requests",
+            "estimated_duration": 15,
+            "files_to_create": [
+              "server/utils/logger.js"
+            ],
+            "files_to_modify": [],
+            "completion_criteria": "Logger has methods for logRequest, logResponse, logError with correlation ID support and sensitive data filtering",
+            "dependencies": [],
+            "step_type": "implementation",
+            "metadata": {
+              "extracted_from_json": true,
+              "original_json_data": {
+                "id": "step_1",
+                "title": "Enhance Logger Utility with Request Logging Capabilities",
+                "description": "Extend server/utils/logger.js to include request-specific logging methods, add correlation ID support, implement sensitive data filtering, and add structured formatting for HTTP requests",
+                "files_affected": [
+                  "server/utils/logger.js"
+                ],
+                "estimated_time_minutes": 15,
+                "completion_criteria": "Logger has methods for logRequest, logResponse, logError with correlation ID support and sensitive data filtering",
+                "dependencies": [],
+                "step_type": "implementation"
+              },
+              "original_files_affected": [
+                "server/utils/logger.js"
+              ]
+            }
+          },
+          "files_to_create": [
+            "server/utils/logger.js"
+          ],
+          "files_to_modify": [],
+          "completion_criteria": "Logger has methods for logRequest, logResponse, logError with correlation ID support and sensitive data filtering",
+          "step_type": "implementation",
+          "extracted_via_llm": true,
+          "extraction_source": "plan_manager",
+          "llm_calls": [
+            {
+              "run_id": "de3d94a7-7fde-4f92-9c74-c5c74cf76bc1",
+              "start_time": "2025-10-15T10:31:31.107054",
+              "model": "openrouter/anthropic/claude-sonnet-4.5",
+              "prompt_count": 10,
+              "end_time": "2025-10-15T10:31:33.212565",
+              "duration_seconds": 2.105499,
+              "prompt_tokens": 0,
+              "completion_tokens": 0,
+              "total_tokens": 0
+            },
+            {
+              "run_id": "e9a6521d-5301-499a-891c-6214ccbe688a",
+              "start_time": "2025-10-15T10:31:53.882844",
+              "model": "openrouter/anthropic/claude-sonnet-4.5",
+              "prompt_count": 10,
+              "end_time": "2025-10-15T10:31:56.307682",
+              "duration_seconds": 2.424825,
+              "prompt_tokens": 0,
+              "completion_tokens": 0,
+              "total_tokens": 0
+            }
+          ],
+          "last_progress_message": "Awaiting completion criteria"
+        }
+      },
+      "request-logging-implementation-7a3f9c_step_2": {
+        "id": "request-logging-implementation-7a3f9c_step_2",
+        "title": "Create Request Logging Middleware for Express",
+        "description": "Create server/middleware/requestLogger.js that logs all incoming requests with method, path, headers, body, and generates correlation IDs. Log responses with status code, response time, and body",
+        "state": "pending",
+        "start_time": null,
+        "end_time": null,
+        "error_message": null,
+        "dependencies": [
+          "request-logging-implementation-7a3f9c_step_1"
+        ],
+        "estimated_duration": 20,
+        "actual_duration": null,
+        "progress_percentage": 0,
+        "metadata": {
+          "extracted_from_json": true,
+          "original_json_data": {
+            "id": "step_2",
+            "title": "Create Request Logging Middleware for Express",
+            "description": "Create server/middleware/requestLogger.js that logs all incoming requests with method, path, headers, body, and generates correlation IDs. Log responses with status code, response time, and body",
+            "files_affected": [
+              "server/middleware/requestLogger.js"
+            ],
+            "estimated_time_minutes": 20,
+            "completion_criteria": "Middleware logs request start, request end with timing, handles errors, and attaches correlation IDs to requests",
+            "dependencies": [
+              "step_1"
+            ],
+            "step_type": "implementation"
+          },
+          "original_files_affected": [
+            "server/middleware/requestLogger.js"
+          ],
+          "original_step_data": {
+            "id": "request-logging-implementation-7a3f9c_step_2",
+            "title": "Create Request Logging Middleware for Express",
+            "description": "Create server/middleware/requestLogger.js that logs all incoming requests with method, path, headers, body, and generates correlation IDs. Log responses with status code, response time, and body",
+            "estimated_duration": 20,
+            "files_to_create": [
+              "server/middleware/requestLogger.js"
+            ],
+            "files_to_modify": [],
+            "completion_criteria": "Middleware logs request start, request end with timing, handles errors, and attaches correlation IDs to requests",
+            "dependencies": [
+              "request-logging-implementation-7a3f9c_step_1"
+            ],
+            "step_type": "implementation",
+            "metadata": {
+              "extracted_from_json": true,
+              "original_json_data": {
+                "id": "step_2",
+                "title": "Create Request Logging Middleware for Express",
+                "description": "Create server/middleware/requestLogger.js that logs all incoming requests with method, path, headers, body, and generates correlation IDs. Log responses with status code, response time, and body",
+                "files_affected": [
+                  "server/middleware/requestLogger.js"
+                ],
+                "estimated_time_minutes": 20,
+                "completion_criteria": "Middleware logs request start, request end with timing, handles errors, and attaches correlation IDs to requests",
+                "dependencies": [
+                  "step_1"
+                ],
+                "step_type": "implementation"
+              },
+              "original_files_affected": [
+                "server/middleware/requestLogger.js"
+              ]
+            }
+          },
+          "files_to_create": [
+            "server/middleware/requestLogger.js"
+          ],
+          "files_to_modify": [],
+          "completion_criteria": "Middleware logs request start, request end with timing, handles errors, and attaches correlation IDs to requests",
+          "step_type": "implementation",
+          "extracted_via_llm": true,
+          "extraction_source": "plan_manager"
+        }
+      },
+      "request-logging-implementation-7a3f9c_step_3": {
+        "id": "request-logging-implementation-7a3f9c_step_3",
+        "title": "Integrate Request Logging Middleware into Server",
+        "description": "Add the request logging middleware to server/index.js before route handlers, configure it to exclude health check endpoints if needed, and ensure it works with existing auth middleware",
+        "state": "pending",
+        "start_time": null,
+        "end_time": null,
+        "error_message": null,
+        "dependencies": [
+          "request-logging-implementation-7a3f9c_step_2"
+        ],
+        "estimated_duration": 10,
+        "actual_duration": null,
+        "progress_percentage": 0,
+        "metadata": {
+          "extracted_from_json": true,
+          "original_json_data": {
+            "id": "step_3",
+            "title": "Integrate Request Logging Middleware into Server",
+            "description": "Add the request logging middleware to server/index.js before route handlers, configure it to exclude health check endpoints if needed, and ensure it works with existing auth middleware",
+            "files_affected": [
+              "server/index.js"
+            ],
+            "estimated_time_minutes": 10,
+            "completion_criteria": "All HTTP requests are logged with correlation IDs, timing information, and request/response details",
+            "dependencies": [
+              "step_2"
+            ],
+            "step_type": "integration"
+          },
+          "original_files_affected": [
+            "server/index.js"
+          ],
+          "original_step_data": {
+            "id": "request-logging-implementation-7a3f9c_step_3",
+            "title": "Integrate Request Logging Middleware into Server",
+            "description": "Add the request logging middleware to server/index.js before route handlers, configure it to exclude health check endpoints if needed, and ensure it works with existing auth middleware",
+            "estimated_duration": 10,
+            "files_to_create": [
+              "server/index.js"
+            ],
+            "files_to_modify": [],
+            "completion_criteria": "All HTTP requests are logged with correlation IDs, timing information, and request/response details",
+            "dependencies": [
+              "request-logging-implementation-7a3f9c_step_2"
+            ],
+            "step_type": "integration",
+            "metadata": {
+              "extracted_from_json": true,
+              "original_json_data": {
+                "id": "step_3",
+                "title": "Integrate Request Logging Middleware into Server",
+                "description": "Add the request logging middleware to server/index.js before route handlers, configure it to exclude health check endpoints if needed, and ensure it works with existing auth middleware",
+                "files_affected": [
+                  "server/index.js"
+                ],
+                "estimated_time_minutes": 10,
+                "completion_criteria": "All HTTP requests are logged with correlation IDs, timing information, and request/response details",
+                "dependencies": [
+                  "step_2"
+                ],
+                "step_type": "integration"
+              },
+              "original_files_affected": [
+                "server/index.js"
+              ]
+            }
+          },
+          "files_to_create": [
+            "server/index.js"
+          ],
+          "files_to_modify": [],
+          "completion_criteria": "All HTTP requests are logged with correlation IDs, timing information, and request/response details",
+          "step_type": "integration",
+          "extracted_via_llm": true,
+          "extraction_source": "plan_manager"
+        }
+      },
+      "request-logging-implementation-7a3f9c_step_4": {
+        "id": "request-logging-implementation-7a3f9c_step_4",
+        "title": "Add Request Logging to Route Handlers",
+        "description": "Update server/routes/auth.js and server/routes/todos.js to log business logic events, errors, and important operations using the enhanced logger with correlation IDs from request context",
+        "state": "pending",
+        "start_time": null,
+        "end_time": null,
+        "error_message": null,
+        "dependencies": [
+          "request-logging-implementation-7a3f9c_step_3"
+        ],
+        "estimated_duration": 15,
+        "actual_duration": null,
+        "progress_percentage": 0,
+        "metadata": {
+          "extracted_from_json": true,
+          "original_json_data": {
+            "id": "step_4",
+            "title": "Add Request Logging to Route Handlers",
+            "description": "Update server/routes/auth.js and server/routes/todos.js to log business logic events, errors, and important operations using the enhanced logger with correlation IDs from request context",
+            "files_affected": [
+              "server/routes/auth.js",
+              "server/routes/todos.js"
+            ],
+            "estimated_time_minutes": 15,
+            "completion_criteria": "All route handlers log key operations, errors include correlation IDs, and business events are tracked",
+            "dependencies": [
+              "step_3"
+            ],
+            "step_type": "implementation"
+          },
+          "original_files_affected": [
+            "server/routes/auth.js",
+            "server/routes/todos.js"
+          ],
+          "original_step_data": {
+            "id": "request-logging-implementation-7a3f9c_step_4",
+            "title": "Add Request Logging to Route Handlers",
+            "description": "Update server/routes/auth.js and server/routes/todos.js to log business logic events, errors, and important operations using the enhanced logger with correlation IDs from request context",
+            "estimated_duration": 15,
+            "files_to_create": [],
+            "files_to_modify": [
+              "server/routes/auth.js",
+              "server/routes/todos.js"
+            ],
+            "completion_criteria": "All route handlers log key operations, errors include correlation IDs, and business events are tracked",
+            "dependencies": [
+              "request-logging-implementation-7a3f9c_step_3"
+            ],
+            "step_type": "implementation",
+            "metadata": {
+              "extracted_from_json": true,
+              "original_json_data": {
+                "id": "step_4",
+                "title": "Add Request Logging to Route Handlers",
+                "description": "Update server/routes/auth.js and server/routes/todos.js to log business logic events, errors, and important operations using the enhanced logger with correlation IDs from request context",
+                "files_affected": [
+                  "server/routes/auth.js",
+                  "server/routes/todos.js"
+                ],
+                "estimated_time_minutes": 15,
+                "completion_criteria": "All route handlers log key operations, errors include correlation IDs, and business events are tracked",
+                "dependencies": [
+                  "step_3"
+                ],
+                "step_type": "implementation"
+              },
+              "original_files_affected": [
+                "server/routes/auth.js",
+                "server/routes/todos.js"
+              ]
+            }
+          },
+          "files_to_create": [],
+          "files_to_modify": [
+            "server/routes/auth.js",
+            "server/routes/todos.js"
+          ],
+          "completion_criteria": "All route handlers log key operations, errors include correlation IDs, and business events are tracked",
+          "step_type": "implementation",
+          "extracted_via_llm": true,
+          "extraction_source": "plan_manager"
+        }
+      },
+      "request-logging-implementation-7a3f9c_step_5": {
+        "id": "request-logging-implementation-7a3f9c_step_5",
+        "title": "Implement Client-Side API Request Logging",
+        "description": "Enhance src/utils/api.js to log all outgoing API requests and responses, include correlation ID headers, log errors with full context, and add configurable log levels for development vs production",
+        "state": "pending",
+        "start_time": null,
+        "end_time": null,
+        "error_message": null,
+        "dependencies": [
+          "request-logging-implementation-7a3f9c_step_3"
+        ],
+        "estimated_duration": 15,
+        "actual_duration": null,
+        "progress_percentage": 0,
+        "metadata": {
+          "extracted_from_json": true,
+          "original_json_data": {
+            "id": "step_5",
+            "title": "Implement Client-Side API Request Logging",
+            "description": "Enhance src/utils/api.js to log all outgoing API requests and responses, include correlation ID headers, log errors with full context, and add configurable log levels for development vs production",
+            "files_affected": [
+              "src/utils/api.js"
+            ],
+            "estimated_time_minutes": 15,
+            "completion_criteria": "All API calls are logged with request details, response status, timing, and correlation IDs that match server logs",
+            "dependencies": [
+              "step_3"
+            ],
+            "step_type": "implementation"
+          },
+          "original_files_affected": [
+            "src/utils/api.js"
+          ],
+          "original_step_data": {
+            "id": "request-logging-implementation-7a3f9c_step_5",
+            "title": "Implement Client-Side API Request Logging",
+            "description": "Enhance src/utils/api.js to log all outgoing API requests and responses, include correlation ID headers, log errors with full context, and add configurable log levels for development vs production",
+            "estimated_duration": 15,
+            "files_to_create": [],
+            "files_to_modify": [
+              "src/utils/api.js"
+            ],
+            "completion_criteria": "All API calls are logged with request details, response status, timing, and correlation IDs that match server logs",
+            "dependencies": [
+              "request-logging-implementation-7a3f9c_step_3"
+            ],
+            "step_type": "implementation",
+            "metadata": {
+              "extracted_from_json": true,
+              "original_json_data": {
+                "id": "step_5",
+                "title": "Implement Client-Side API Request Logging",
+                "description": "Enhance src/utils/api.js to log all outgoing API requests and responses, include correlation ID headers, log errors with full context, and add configurable log levels for development vs production",
+                "files_affected": [
+                  "src/utils/api.js"
+                ],
+                "estimated_time_minutes": 15,
+                "completion_criteria": "All API calls are logged with request details, response status, timing, and correlation IDs that match server logs",
+                "dependencies": [
+                  "step_3"
+                ],
+                "step_type": "implementation"
+              },
+              "original_files_affected": [
+                "src/utils/api.js"
+              ]
+            }
+          },
+          "files_to_create": [],
+          "files_to_modify": [
+            "src/utils/api.js"
+          ],
+          "completion_criteria": "All API calls are logged with request details, response status, timing, and correlation IDs that match server logs",
+          "step_type": "implementation",
+          "extracted_via_llm": true,
+          "extraction_source": "plan_manager"
+        }
+      },
+      "request-logging-implementation-7a3f9c_step_6": {
+        "id": "request-logging-implementation-7a3f9c_step_6",
+        "title": "Add Environment Configuration for Logging",
+        "description": "Update .env and .env.example with logging configuration variables (LOG_LEVEL, LOG_REQUESTS, LOG_RESPONSE_BODY) and update server to read these configurations",
+        "state": "pending",
+        "start_time": null,
+        "end_time": null,
+        "error_message": null,
+        "dependencies": [
+          "request-logging-implementation-7a3f9c_step_5"
+        ],
+        "estimated_duration": 10,
+        "actual_duration": null,
+        "progress_percentage": 0,
+        "metadata": {
+          "extracted_from_json": true,
+          "original_json_data": {
+            "id": "step_6",
+            "title": "Add Environment Configuration for Logging",
+            "description": "Update .env and .env.example with logging configuration variables (LOG_LEVEL, LOG_REQUESTS, LOG_RESPONSE_BODY) and update server to read these configurations",
+            "files_affected": [
+              ".env",
+              ".env.example",
+              "server/index.js"
+            ],
+            "estimated_time_minutes": 10,
+            "completion_criteria": "Logging behavior is configurable via environment variables, defaults are set appropriately for development and production",
+            "dependencies": [
+              "step_5"
+            ],
+            "step_type": "implementation"
+          },
+          "original_files_affected": [
+            ".env",
+            ".env.example",
+            "server/index.js"
+          ],
+          "original_step_data": {
+            "id": "request-logging-implementation-7a3f9c_step_6",
+            "title": "Add Environment Configuration for Logging",
+            "description": "Update .env and .env.example with logging configuration variables (LOG_LEVEL, LOG_REQUESTS, LOG_RESPONSE_BODY) and update server to read these configurations",
+            "estimated_duration": 10,
+            "files_to_create": [],
+            "files_to_modify": [
+              ".env",
+              ".env.example",
+              "server/index.js"
+            ],
+            "completion_criteria": "Logging behavior is configurable via environment variables, defaults are set appropriately for development and production",
+            "dependencies": [
+              "request-logging-implementation-7a3f9c_step_5"
+            ],
+            "step_type": "implementation",
+            "metadata": {
+              "extracted_from_json": true,
+              "original_json_data": {
+                "id": "step_6",
+                "title": "Add Environment Configuration for Logging",
+                "description": "Update .env and .env.example with logging configuration variables (LOG_LEVEL, LOG_REQUESTS, LOG_RESPONSE_BODY) and update server to read these configurations",
+                "files_affected": [
+                  ".env",
+                  ".env.example",
+                  "server/index.js"
+                ],
+                "estimated_time_minutes": 10,
+                "completion_criteria": "Logging behavior is configurable via environment variables, defaults are set appropriately for development and production",
+                "dependencies": [
+                  "step_5"
+                ],
+                "step_type": "implementation"
+              },
+              "original_files_affected": [
+                ".env",
+                ".env.example",
+                "server/index.js"
+              ]
+            }
+          },
+          "files_to_create": [],
+          "files_to_modify": [
+            ".env",
+            ".env.example",
+            "server/index.js"
+          ],
+          "completion_criteria": "Logging behavior is configurable via environment variables, defaults are set appropriately for development and production",
+          "step_type": "implementation",
+          "extracted_via_llm": true,
+          "extraction_source": "plan_manager"
+        }
+      },
+      "request-logging-implementation-7a3f9c_step_7": {
+        "id": "request-logging-implementation-7a3f9c_step_7",
+        "title": "Update Documentation with Logging Information",
+        "description": "Update README.md to document the logging system, environment variables for configuration, log format structure, and how to use correlation IDs for debugging",
+        "state": "pending",
+        "start_time": null,
+        "end_time": null,
+        "error_message": null,
+        "dependencies": [
+          "request-logging-implementation-7a3f9c_step_6"
+        ],
+        "estimated_duration": 10,
+        "actual_duration": null,
+        "progress_percentage": 0,
+        "metadata": {
+          "extracted_from_json": true,
+          "original_json_data": {
+            "id": "step_7",
+            "title": "Update Documentation with Logging Information",
+            "description": "Update README.md to document the logging system, environment variables for configuration, log format structure, and how to use correlation IDs for debugging",
+            "files_affected": [
+              "README.md"
+            ],
+            "estimated_time_minutes": 10,
+            "completion_criteria": "Documentation clearly explains logging features, configuration options, and debugging workflows",
+            "dependencies": [
+              "step_6"
+            ],
+            "step_type": "documentation"
+          },
+          "original_files_affected": [
+            "README.md"
+          ],
+          "original_step_data": {
+            "id": "request-logging-implementation-7a3f9c_step_7",
+            "title": "Update Documentation with Logging Information",
+            "description": "Update README.md to document the logging system, environment variables for configuration, log format structure, and how to use correlation IDs for debugging",
+            "estimated_duration": 10,
+            "files_to_create": [],
+            "files_to_modify": [
+              "README.md"
+            ],
+            "completion_criteria": "Documentation clearly explains logging features, configuration options, and debugging workflows",
+            "dependencies": [
+              "request-logging-implementation-7a3f9c_step_6"
+            ],
+            "step_type": "documentation",
+            "metadata": {
+              "extracted_from_json": true,
+              "original_json_data": {
+                "id": "step_7",
+                "title": "Update Documentation with Logging Information",
+                "description": "Update README.md to document the logging system, environment variables for configuration, log format structure, and how to use correlation IDs for debugging",
+                "files_affected": [
+                  "README.md"
+                ],
+                "estimated_time_minutes": 10,
+                "completion_criteria": "Documentation clearly explains logging features, configuration options, and debugging workflows",
+                "dependencies": [
+                  "step_6"
+                ],
+                "step_type": "documentation"
+              },
+              "original_files_affected": [
+                "README.md"
+              ]
+            }
+          },
+          "files_to_create": [],
+          "files_to_modify": [
+            "README.md"
+          ],
+          "completion_criteria": "Documentation clearly explains logging features, configuration options, and debugging workflows",
+          "step_type": "documentation",
+          "extracted_via_llm": true,
+          "extraction_source": "plan_manager"
+        }
+      }
+    },
+    "plan_start_time": null,
+    "plan_end_time": null,
+    "last_updated": "2025-10-15T10:36:10.028988",
+    "version": "2.0",
+    "persistence_method": "atomic_json_write",
+    "langchain_summary": {
+      "total_llm_calls": 2,
+      "total_chain_calls": 0,
+      "total_tokens": 0,
+      "total_duration": 4.530324,
+      "has_langchain_data": true
+    },
+    "total_steps": 7,
+    "completed_steps": 0,
+    "failed_steps": 0,
+    "in_progress_steps": 1,
+    "overall_progress_percentage": 11.428571428571429,
+    "total_estimated_duration": 95,
+    "step_details": [
+      {
+        "id": "request-logging-implementation-7a3f9c_step_1",
+        "title": "Enhance Logger Utility with Request Logging Capabilities",
+        "estimated_duration": 15,
+        "dependencies": []
+      },
+      {
+        "id": "request-logging-implementation-7a3f9c_step_2",
+        "title": "Create Request Logging Middleware for Express",
+        "estimated_duration": 20,
+        "dependencies": [
+          "request-logging-implementation-7a3f9c_step_1"
+        ]
+      },
+      {
+        "id": "request-logging-implementation-7a3f9c_step_3",
+        "title": "Integrate Request Logging Middleware into Server",
+        "estimated_duration": 10,
+        "dependencies": [
+          "request-logging-implementation-7a3f9c_step_2"
+        ]
+      },
+      {
+        "id": "request-logging-implementation-7a3f9c_step_4",
+        "title": "Add Request Logging to Route Handlers",
+        "estimated_duration": 15,
+        "dependencies": [
+          "request-logging-implementation-7a3f9c_step_3"
+        ]
+      },
+      {
+        "id": "request-logging-implementation-7a3f9c_step_5",
+        "title": "Implement Client-Side API Request Logging",
+        "estimated_duration": 15,
+        "dependencies": [
+          "request-logging-implementation-7a3f9c_step_3"
+        ]
+      },
+      {
+        "id": "request-logging-implementation-7a3f9c_step_6",
+        "title": "Add Environment Configuration for Logging",
+        "estimated_duration": 10,
+        "dependencies": [
+          "request-logging-implementation-7a3f9c_step_5"
+        ]
+      },
+      {
+        "id": "request-logging-implementation-7a3f9c_step_7",
+        "title": "Update Documentation with Logging Information",
+        "estimated_duration": 10,
+        "dependencies": [
+          "request-logging-implementation-7a3f9c_step_6"
+        ]
+      }
+    ]
+  },
+  "archive_metadata": {
+    "status": "COMPLETED",
+    "reason": "completed",
+    "completed_date": "2025-10-15T10:36:54.708474",
+    "duration": "0:03:03.759940",
+    "progress_summary": "0/7 steps completed",
+    "additional_info": "",
+    "archived_from": "request-logging-implementation-7a3f9c.json",
+    "context_cleared": true,
+    "archived": true
+  }
+}

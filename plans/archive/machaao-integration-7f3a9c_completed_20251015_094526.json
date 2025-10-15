@@ -1,0 +1,1600 @@
+{
+  "plan_id": "machaao-integration-7f3a9c",
+  "overview": "Transform the React Todo application into a MACHAAO-based chatbot interface with conversational AI capabilities, integrating MACHAAO messaging platform APIs and converting the UI to a chat-based interaction model",
+  "requirements": [
+    "Integrate MACHAAO messaging platform SDK and APIs",
+    "Convert traditional UI to conversational chat interface",
+    "Implement natural language processing for todo commands",
+    "Add MACHAAO webhook handlers for incoming messages",
+    "Support text-based todo operations via chat",
+    "Maintain existing todo functionality through conversational interface",
+    "Configure MACHAAO bot credentials and environment variables",
+    "Implement message parsing and intent recognition",
+    "Add rich message formatting for todo lists in chat",
+    "Enable user authentication via MACHAAO platform"
+  ],
+  "implementation_strategy": "Convert the existing React Todo app into a MACHAAO chatbot by: (1) Installing MACHAAO SDK and dependencies, (2) Creating backend webhook handlers for message processing, (3) Implementing NLP-based command parser for todo operations, (4) Transforming UI components into chat message renderers, (5) Integrating MACHAAO messaging APIs for send/receive, (6) Adding conversation state management, and (7) Configuring bot deployment settings",
+  "steps": [
+    {
+      "id": "step_1",
+      "title": "Install MACHAAO SDK and Dependencies",
+      "description": "Add MACHAAO messaging SDK, Express.js for webhook server, and NLP libraries to package.json. Install all required dependencies for chatbot functionality",
+      "files_affected": [
+        "package.json"
+      ],
+      "estimated_time_minutes": 8,
+      "completion_criteria": "package.json updated with machaao-sdk, express, body-parser, dotenv, and natural/compromise NLP libraries. Dependencies successfully installed",
+      "dependencies": [],
+      "step_type": "setup"
+    },
+    {
+      "id": "step_2",
+      "title": "Configure MACHAAO Environment Variables",
+      "description": "Create .env file with MACHAAO bot credentials including API key, bot token, webhook URL, and base API endpoint. Update .env.example with template",
+      "files_affected": [
+        ".env",
+        ".env.example"
+      ],
+      "estimated_time_minutes": 5,
+      "completion_criteria": ".env file created with MACHAAO_API_KEY, MACHAAO_BOT_TOKEN, MACHAAO_WEBHOOK_URL, and MACHAAO_BASE_URL variables. .env.example updated with placeholder values",
+      "dependencies": [
+        "step_1"
+      ],
+      "step_type": "setup"
+    },
+    {
+      "id": "step_3",
+      "title": "Create MACHAAO Webhook Server",
+      "description": "Build Express.js server with webhook endpoint to receive MACHAAO messages. Implement message verification, routing, and response handling",
+      "files_affected": [
+        "server/webhook.js",
+        "server/index.js"
+      ],
+      "estimated_time_minutes": 15,
+      "completion_criteria": "Webhook server running on port 3001, POST /webhook endpoint accepting MACHAAO messages, signature verification implemented, basic message echo working",
+      "dependencies": [
+        "step_1",
+        "step_2"
+      ],
+      "step_type": "implementation"
+    },
+    {
+      "id": "step_4",
+      "title": "Implement Message Parser and Intent Recognition",
+      "description": "Create NLP-based command parser to extract todo operations from natural language. Support commands like 'add task', 'complete item', 'show todos', 'delete task', 'filter active/completed'",
+      "files_affected": [
+        "server/utils/messageParser.js",
+        "server/utils/intentRecognizer.js"
+      ],
+      "estimated_time_minutes": 20,
+      "completion_criteria": "Parser correctly identifies intents: ADD_TODO, COMPLETE_TODO, DELETE_TODO, LIST_TODOS, FILTER_TODOS, CLEAR_COMPLETED. Extracts task text and parameters from natural language input",
+      "dependencies": [
+        "step_3"
+      ],
+      "step_type": "implementation"
+    },
+    {
+      "id": "step_5",
+      "title": "Create MACHAAO Service Layer",
+      "description": "Build service module for MACHAAO API interactions including sending messages, rich cards, quick replies, and handling user sessions",
+      "files_affected": [
+        "server/services/machaaoService.js"
+      ],
+      "estimated_time_minutes": 18,
+      "completion_criteria": "Service methods implemented: sendTextMessage, sendRichCard, sendQuickReplies, getUserProfile, updateUserState. API authentication working correctly",
+      "dependencies": [
+        "step_2"
+      ],
+      "step_type": "implementation"
+    },
+    {
+      "id": "step_6",
+      "title": "Implement Conversational Todo Controller",
+      "description": "Create controller to handle todo operations via chat commands. Process parsed intents and execute corresponding todo actions with conversational responses",
+      "files_affected": [
+        "server/controllers/todoController.js"
+      ],
+      "estimated_time_minutes": 22,
+      "completion_criteria": "Controller handles all todo operations: add, complete, delete, list, filter, clear. Returns formatted chat responses with success/error messages. Maintains user-specific todo lists",
+      "dependencies": [
+        "step_4",
+        "step_5"
+      ],
+      "step_type": "implementation"
+    },
+    {
+      "id": "step_7",
+      "title": "Build Chat Message Formatters",
+      "description": "Create formatters to render todo lists, stats, and responses as rich MACHAAO messages with cards, buttons, and quick replies",
+      "files_affected": [
+        "server/utils/messageFormatter.js"
+      ],
+      "estimated_time_minutes": 15,
+      "completion_criteria": "Formatters created for: todo list cards with checkboxes, stats summary, filter buttons as quick replies, confirmation messages. Messages display correctly in MACHAAO chat",
+      "dependencies": [
+        "step_5"
+      ],
+      "step_type": "implementation"
+    },
+    {
+      "id": "step_8",
+      "title": "Implement User State Management",
+      "description": "Create session management for user-specific todo data, conversation context, and filter preferences. Use in-memory store with optional Redis integration",
+      "files_affected": [
+        "server/store/userStore.js",
+        "server/middleware/sessionMiddleware.js"
+      ],
+      "estimated_time_minutes": 12,
+      "completion_criteria": "User sessions persist across messages. Todo data isolated per user. Filter state maintained. Session cleanup after inactivity",
+      "dependencies": [
+        "step_3"
+      ],
+      "step_type": "implementation"
+    },
+    {
+      "id": "step_9",
+      "title": "Transform React UI to Chat Interface",
+      "description": "Convert existing React components to render as MACHAAO chat interface. Replace TodoInput with message input, TodoList with chat bubbles, FilterButtons with quick replies",
+      "files_affected": [
+        "src/App.jsx",
+        "src/components/ChatInterface.jsx",
+        "src/components/MessageBubble.jsx",
+        "src/components/QuickReplyButtons.jsx"
+      ],
+      "estimated_time_minutes": 20,
+      "completion_criteria": "UI displays as chat interface with message history, input box, quick reply buttons. Messages render with proper formatting. Chat scrolls to latest message",
+      "dependencies": [
+        "step_7"
+      ],
+      "step_type": "implementation"
+    },
+    {
+      "id": "step_10",
+      "title": "Integrate Frontend with MACHAAO SDK",
+      "description": "Connect React frontend to MACHAAO messaging using client SDK. Implement message sending, receiving, and real-time updates",
+      "files_affected": [
+        "src/services/machaaoClient.js",
+        "src/hooks/useMachaaoChat.js"
+      ],
+      "estimated_time_minutes": 18,
+      "completion_criteria": "Frontend sends messages to MACHAAO. Receives and displays bot responses. Real-time message updates working. User authentication integrated",
+      "dependencies": [
+        "step_9",
+        "step_5"
+      ],
+      "step_type": "integration"
+    },
+    {
+      "id": "step_11",
+      "title": "Add Welcome Flow and Help Commands",
+      "description": "Implement onboarding conversation with welcome message, tutorial, and help command showing available todo operations",
+      "files_affected": [
+        "server/controllers/welcomeController.js",
+        "server/utils/helpMessages.js"
+      ],
+      "estimated_time_minutes": 10,
+      "completion_criteria": "New users receive welcome message with quick start guide. /help command shows all available commands. Examples provided for each operation",
+      "dependencies": [
+        "step_6"
+      ],
+      "step_type": "implementation"
+    },
+    {
+      "id": "step_12",
+      "title": "Update Build Configuration for Dual Mode",
+      "description": "Configure build scripts to support both standalone React app and MACHAAO chatbot modes. Update vite.config.js and add server start scripts",
+      "files_affected": [
+        "vite.config.js",
+        "package.json",
+        "server.js"
+      ],
+      "estimated_time_minutes": 10,
+      "completion_criteria": "npm run dev starts both frontend and webhook server. npm run build creates production bundle. npm run server starts webhook only. Environment-based mode switching works",
+      "dependencies": [
+        "step_3",
+        "step_10"
+      ],
+      "step_type": "setup"
+    },
+    {
+      "id": "step_13",
+      "title": "Update Documentation for MACHAAO Integration",
+      "description": "Update README.md with MACHAAO setup instructions, bot configuration, deployment guide, and conversational command reference",
+      "files_affected": [
+        "README.md",
+        "docs/MACHAAO_SETUP.md"
+      ],
+      "estimated_time_minutes": 12,
+      "completion_criteria": "README includes MACHAAO prerequisites, bot registration steps, environment setup, webhook configuration, and command examples. Separate detailed setup guide created",
+      "dependencies": [
+        "step_12"
+      ],
+      "step_type": "documentation"
+    }
+  ],
+  "technical_specifications": {
+    "files_to_create": [
+      "server/webhook.js",
+      "server/index.js",
+      "server/utils/messageParser.js",
+      "server/utils/intentRecognizer.js",
+      "server/services/machaaoService.js",
+      "server/controllers/todoController.js",
+      "server/controllers/welcomeController.js",
+      "server/utils/messageFormatter.js",
+      "server/utils/helpMessages.js",
+      "server/store/userStore.js",
+      "server/middleware/sessionMiddleware.js",
+      "src/components/ChatInterface.jsx",
+      "src/components/MessageBubble.jsx",
+      "src/components/QuickReplyButtons.jsx",
+      "src/services/machaaoClient.js",
+      "src/hooks/useMachaaoChat.js",
+      "docs/MACHAAO_SETUP.md",
+      "server.js",
+      ".env"
+    ],
+    "files_to_modify": [
+      "package.json",
+      ".env.example",
+      "src/App.jsx",
+      "vite.config.js",
+      "README.md"
+    ],
+    "dependencies": [
+      "express",
+      "body-parser",
+      "dotenv",
+      "axios",
+      "compromise",
+      "cors",
+      "helmet",
+      "express-rate-limit"
+    ],
+    "apis_to_integrate": [
+      "MACHAAO Messaging API v2",
+      "MACHAAO Webhook API",
+      "MACHAAO User Profile API",
+      "MACHAAO Rich Message API"
+    ],
+    "configuration_files": [
+      ".env",
+      ".env.example",
+      "vite.config.js",
+      "package.json"
+    ]
+  },
+  "risk_assessment": {
+    "potential_challenges": [
+      "MACHAAO API rate limiting affecting message delivery",
+      "Natural language parsing accuracy for complex todo commands",
+      "User session management at scale without database",
+      "Webhook server reliability and uptime requirements",
+      "Message formatting compatibility across different MACHAAO clients"
+    ],
+    "mitigation_strategies": [
+      "Implement request queuing and retry logic for API calls",
+      "Use multiple NLP patterns and fallback to keyword matching",
+      "Add Redis integration option for production session storage",
+      "Include health check endpoint and monitoring setup",
+      "Test message rendering across web and mobile MACHAAO clients"
+    ],
+    "fallback_options": [
+      "Maintain original React UI as alternative interface mode",
+      "Support both conversational and structured command formats",
+      "Provide manual command syntax for NLP parsing failures",
+      "Enable local storage backup for user todo data",
+      "Allow direct API mode bypassing MACHAAO for testing"
+    ]
+  },
+  "success_criteria": [
+    "MACHAAO webhook server receives and processes messages successfully",
+    "Natural language commands correctly parsed and executed for all todo operations",
+    "Chat interface displays todo lists with proper formatting and interactivity",
+    "User sessions maintain separate todo lists across conversations",
+    "Quick replies and rich cards render correctly in MACHAAO chat",
+    "Welcome flow and help commands provide clear user guidance",
+    "Both standalone and MACHAAO modes functional via configuration",
+    "Documentation complete with setup and deployment instructions"
+  ],
+  "timeline_estimate_minutes": 185,
+  "created_timestamp": "2025-01-10T14:22:35.891234",
+  "status": "ACTIVE",
+  "progress_tracking_enabled": true,
+  "plan_type": "AI-Optimized Implementation Plan",
+  "metadata": {
+    "created": "2025-10-15T09:32:07.350151",
+    "user_request": "make it machaao based",
+    "progress_aware": true,
+    "plan_id": "machaao-integration-7f3a9c",
+    "step_count": 13,
+    "estimated_duration_minutes": 185,
+    "last_progress_update": "2025-10-15T09:44:17.748071",
+    "persistence_version": "2.0",
+    "format_version": "2.0",
+    "supports_step_details": true,
+    "archived": true,
+    "archive_date": "2025-10-15T09:45:26.565021",
+    "archive_reason": "completed"
+  },
+  "progress_tracking": {
+    "plan_id": "machaao-integration-7f3a9c",
+    "steps": {
+      "machaao-integration-7f3a9c_step_1": {
+        "id": "machaao-integration-7f3a9c_step_1",
+        "title": "Install MACHAAO SDK and Dependencies",
+        "description": "Add MACHAAO messaging SDK, Express.js for webhook server, and NLP libraries to package.json. Install all required dependencies for chatbot functionality",
+        "state": "in_progress",
+        "start_time": "2025-10-15T09:32:07.357482",
+        "end_time": null,
+        "error_message": null,
+        "dependencies": [],
+        "estimated_duration": 8,
+        "actual_duration": null,
+        "progress_percentage": 20,
+        "metadata": {
+          "extracted_from_json": true,
+          "original_json_data": {
+            "id": "step_1",
+            "title": "Install MACHAAO SDK and Dependencies",
+            "description": "Add MACHAAO messaging SDK, Express.js for webhook server, and NLP libraries to package.json. Install all required dependencies for chatbot functionality",
+            "files_affected": [
+              "package.json"
+            ],
+            "estimated_time_minutes": 8,
+            "completion_criteria": "package.json updated with machaao-sdk, express, body-parser, dotenv, and natural/compromise NLP libraries. Dependencies successfully installed",
+            "dependencies": [],
+            "step_type": "setup"
+          },
+          "original_files_affected": [
+            "package.json"
+          ],
+          "original_step_data": {
+            "id": "machaao-integration-7f3a9c_step_1",
+            "title": "Install MACHAAO SDK and Dependencies",
+            "description": "Add MACHAAO messaging SDK, Express.js for webhook server, and NLP libraries to package.json. Install all required dependencies for chatbot functionality",
+            "estimated_duration": 8,
+            "files_to_create": [],
+            "files_to_modify": [
+              "package.json"
+            ],
+            "completion_criteria": "package.json updated with machaao-sdk, express, body-parser, dotenv, and natural/compromise NLP libraries. Dependencies successfully installed",
+            "dependencies": [],
+            "step_type": "setup",
+            "metadata": {
+              "extracted_from_json": true,
+              "original_json_data": {
+                "id": "step_1",
+                "title": "Install MACHAAO SDK and Dependencies",
+                "description": "Add MACHAAO messaging SDK, Express.js for webhook server, and NLP libraries to package.json. Install all required dependencies for chatbot functionality",
+                "files_affected": [
+                  "package.json"
+                ],
+                "estimated_time_minutes": 8,
+                "completion_criteria": "package.json updated with machaao-sdk, express, body-parser, dotenv, and natural/compromise NLP libraries. Dependencies successfully installed",
+                "dependencies": [],
+                "step_type": "setup"
+              },
+              "original_files_affected": [
+                "package.json"
+              ]
+            }
+          },
+          "files_to_create": [],
+          "files_to_modify": [
+            "package.json"
+          ],
+          "completion_criteria": "package.json updated with machaao-sdk, express, body-parser, dotenv, and natural/compromise NLP libraries. Dependencies successfully installed",
+          "step_type": "setup",
+          "extracted_via_llm": true,
+          "extraction_source": "plan_manager",
+          "llm_calls": [
+            {
+              "run_id": "b4b6587f-11ec-41a9-96cd-c50af114858f",
+              "start_time": "2025-10-15T09:32:07.479015",
+              "model": "openrouter/anthropic/claude-sonnet-4.5",
+              "prompt_count": 8,
+              "end_time": "2025-10-15T09:32:10.113652",
+              "duration_seconds": 2.634625,
+              "prompt_tokens": 0,
+              "completion_tokens": 0,
+              "total_tokens": 0
+            },
+            {
+              "run_id": "0f10213a-f3e9-41a4-9fa6-bede2898acbf",
+              "start_time": "2025-10-15T09:34:40.257393",
+              "model": "openrouter/anthropic/claude-sonnet-4.5",
+              "prompt_count": 10,
+              "end_time": "2025-10-15T09:34:42.682157",
+              "duration_seconds": 2.424749,
+              "prompt_tokens": 0,
+              "completion_tokens": 0,
+              "total_tokens": 0
+            },
+            {
+              "run_id": "c5e6e421-dbef-4512-aa72-5c20ef0f3424",
+              "start_time": "2025-10-15T09:35:19.529138",
+              "model": "openrouter/anthropic/claude-sonnet-4.5",
+              "prompt_count": 10,
+              "end_time": "2025-10-15T09:35:21.922769",
+              "duration_seconds": 2.393615,
+              "prompt_tokens": 0,
+              "completion_tokens": 0,
+              "total_tokens": 0
+            }
+          ],
+          "last_progress_message": "File edited: package.json"
+        }
+      },
+      "machaao-integration-7f3a9c_step_2": {
+        "id": "machaao-integration-7f3a9c_step_2",
+        "title": "Configure MACHAAO Environment Variables",
+        "description": "Create .env file with MACHAAO bot credentials including API key, bot token, webhook URL, and base API endpoint. Update .env.example with template",
+        "state": "pending",
+        "start_time": null,
+        "end_time": null,
+        "error_message": null,
+        "dependencies": [
+          "machaao-integration-7f3a9c_step_1"
+        ],
+        "estimated_duration": 5,
+        "actual_duration": null,
+        "progress_percentage": 0,
+        "metadata": {
+          "extracted_from_json": true,
+          "original_json_data": {
+            "id": "step_2",
+            "title": "Configure MACHAAO Environment Variables",
+            "description": "Create .env file with MACHAAO bot credentials including API key, bot token, webhook URL, and base API endpoint. Update .env.example with template",
+            "files_affected": [
+              ".env",
+              ".env.example"
+            ],
+            "estimated_time_minutes": 5,
+            "completion_criteria": ".env file created with MACHAAO_API_KEY, MACHAAO_BOT_TOKEN, MACHAAO_WEBHOOK_URL, and MACHAAO_BASE_URL variables. .env.example updated with placeholder values",
+            "dependencies": [
+              "step_1"
+            ],
+            "step_type": "setup"
+          },
+          "original_files_affected": [
+            ".env",
+            ".env.example"
+          ],
+          "original_step_data": {
+            "id": "machaao-integration-7f3a9c_step_2",
+            "title": "Configure MACHAAO Environment Variables",
+            "description": "Create .env file with MACHAAO bot credentials including API key, bot token, webhook URL, and base API endpoint. Update .env.example with template",
+            "estimated_duration": 5,
+            "files_to_create": [
+              ".env"
+            ],
+            "files_to_modify": [
+              ".env.example"
+            ],
+            "completion_criteria": ".env file created with MACHAAO_API_KEY, MACHAAO_BOT_TOKEN, MACHAAO_WEBHOOK_URL, and MACHAAO_BASE_URL variables. .env.example updated with placeholder values",
+            "dependencies": [
+              "machaao-integration-7f3a9c_step_1"
+            ],
+            "step_type": "setup",
+            "metadata": {
+              "extracted_from_json": true,
+              "original_json_data": {
+                "id": "step_2",
+                "title": "Configure MACHAAO Environment Variables",
+                "description": "Create .env file with MACHAAO bot credentials including API key, bot token, webhook URL, and base API endpoint. Update .env.example with template",
+                "files_affected": [
+                  ".env",
+                  ".env.example"
+                ],
+                "estimated_time_minutes": 5,
+                "completion_criteria": ".env file created with MACHAAO_API_KEY, MACHAAO_BOT_TOKEN, MACHAAO_WEBHOOK_URL, and MACHAAO_BASE_URL variables. .env.example updated with placeholder values",
+                "dependencies": [
+                  "step_1"
+                ],
+                "step_type": "setup"
+              },
+              "original_files_affected": [
+                ".env",
+                ".env.example"
+              ]
+            }
+          },
+          "files_to_create": [
+            ".env"
+          ],
+          "files_to_modify": [
+            ".env.example"
+          ],
+          "completion_criteria": ".env file created with MACHAAO_API_KEY, MACHAAO_BOT_TOKEN, MACHAAO_WEBHOOK_URL, and MACHAAO_BASE_URL variables. .env.example updated with placeholder values",
+          "step_type": "setup",
+          "extracted_via_llm": true,
+          "extraction_source": "plan_manager"
+        }
+      },
+      "machaao-integration-7f3a9c_step_3": {
+        "id": "machaao-integration-7f3a9c_step_3",
+        "title": "Create MACHAAO Webhook Server",
+        "description": "Build Express.js server with webhook endpoint to receive MACHAAO messages. Implement message verification, routing, and response handling",
+        "state": "pending",
+        "start_time": null,
+        "end_time": null,
+        "error_message": null,
+        "dependencies": [
+          "machaao-integration-7f3a9c_step_1",
+          "machaao-integration-7f3a9c_step_2"
+        ],
+        "estimated_duration": 15,
+        "actual_duration": null,
+        "progress_percentage": 0,
+        "metadata": {
+          "extracted_from_json": true,
+          "original_json_data": {
+            "id": "step_3",
+            "title": "Create MACHAAO Webhook Server",
+            "description": "Build Express.js server with webhook endpoint to receive MACHAAO messages. Implement message verification, routing, and response handling",
+            "files_affected": [
+              "server/webhook.js",
+              "server/index.js"
+            ],
+            "estimated_time_minutes": 15,
+            "completion_criteria": "Webhook server running on port 3001, POST /webhook endpoint accepting MACHAAO messages, signature verification implemented, basic message echo working",
+            "dependencies": [
+              "step_1",
+              "step_2"
+            ],
+            "step_type": "implementation"
+          },
+          "original_files_affected": [
+            "server/webhook.js",
+            "server/index.js"
+          ],
+          "original_step_data": {
+            "id": "machaao-integration-7f3a9c_step_3",
+            "title": "Create MACHAAO Webhook Server",
+            "description": "Build Express.js server with webhook endpoint to receive MACHAAO messages. Implement message verification, routing, and response handling",
+            "estimated_duration": 15,
+            "files_to_create": [
+              "server/webhook.js",
+              "server/index.js"
+            ],
+            "files_to_modify": [],
+            "completion_criteria": "Webhook server running on port 3001, POST /webhook endpoint accepting MACHAAO messages, signature verification implemented, basic message echo working",
+            "dependencies": [
+              "machaao-integration-7f3a9c_step_1",
+              "machaao-integration-7f3a9c_step_2"
+            ],
+            "step_type": "implementation",
+            "metadata": {
+              "extracted_from_json": true,
+              "original_json_data": {
+                "id": "step_3",
+                "title": "Create MACHAAO Webhook Server",
+                "description": "Build Express.js server with webhook endpoint to receive MACHAAO messages. Implement message verification, routing, and response handling",
+                "files_affected": [
+                  "server/webhook.js",
+                  "server/index.js"
+                ],
+                "estimated_time_minutes": 15,
+                "completion_criteria": "Webhook server running on port 3001, POST /webhook endpoint accepting MACHAAO messages, signature verification implemented, basic message echo working",
+                "dependencies": [
+                  "step_1",
+                  "step_2"
+                ],
+                "step_type": "implementation"
+              },
+              "original_files_affected": [
+                "server/webhook.js",
+                "server/index.js"
+              ]
+            }
+          },
+          "files_to_create": [
+            "server/webhook.js",
+            "server/index.js"
+          ],
+          "files_to_modify": [],
+          "completion_criteria": "Webhook server running on port 3001, POST /webhook endpoint accepting MACHAAO messages, signature verification implemented, basic message echo working",
+          "step_type": "implementation",
+          "extracted_via_llm": true,
+          "extraction_source": "plan_manager"
+        }
+      },
+      "machaao-integration-7f3a9c_step_4": {
+        "id": "machaao-integration-7f3a9c_step_4",
+        "title": "Implement Message Parser and Intent Recognition",
+        "description": "Create NLP-based command parser to extract todo operations from natural language. Support commands like 'add task', 'complete item', 'show todos', 'delete task', 'filter active/completed'",
+        "state": "pending",
+        "start_time": null,
+        "end_time": null,
+        "error_message": null,
+        "dependencies": [
+          "machaao-integration-7f3a9c_step_3"
+        ],
+        "estimated_duration": 20,
+        "actual_duration": null,
+        "progress_percentage": 0,
+        "metadata": {
+          "extracted_from_json": true,
+          "original_json_data": {
+            "id": "step_4",
+            "title": "Implement Message Parser and Intent Recognition",
+            "description": "Create NLP-based command parser to extract todo operations from natural language. Support commands like 'add task', 'complete item', 'show todos', 'delete task', 'filter active/completed'",
+            "files_affected": [
+              "server/utils/messageParser.js",
+              "server/utils/intentRecognizer.js"
+            ],
+            "estimated_time_minutes": 20,
+            "completion_criteria": "Parser correctly identifies intents: ADD_TODO, COMPLETE_TODO, DELETE_TODO, LIST_TODOS, FILTER_TODOS, CLEAR_COMPLETED. Extracts task text and parameters from natural language input",
+            "dependencies": [
+              "step_3"
+            ],
+            "step_type": "implementation"
+          },
+          "original_files_affected": [
+            "server/utils/messageParser.js",
+            "server/utils/intentRecognizer.js"
+          ],
+          "original_step_data": {
+            "id": "machaao-integration-7f3a9c_step_4",
+            "title": "Implement Message Parser and Intent Recognition",
+            "description": "Create NLP-based command parser to extract todo operations from natural language. Support commands like 'add task', 'complete item', 'show todos', 'delete task', 'filter active/completed'",
+            "estimated_duration": 20,
+            "files_to_create": [
+              "server/utils/messageParser.js",
+              "server/utils/intentRecognizer.js"
+            ],
+            "files_to_modify": [],
+            "completion_criteria": "Parser correctly identifies intents: ADD_TODO, COMPLETE_TODO, DELETE_TODO, LIST_TODOS, FILTER_TODOS, CLEAR_COMPLETED. Extracts task text and parameters from natural language input",
+            "dependencies": [
+              "machaao-integration-7f3a9c_step_3"
+            ],
+            "step_type": "implementation",
+            "metadata": {
+              "extracted_from_json": true,
+              "original_json_data": {
+                "id": "step_4",
+                "title": "Implement Message Parser and Intent Recognition",
+                "description": "Create NLP-based command parser to extract todo operations from natural language. Support commands like 'add task', 'complete item', 'show todos', 'delete task', 'filter active/completed'",
+                "files_affected": [
+                  "server/utils/messageParser.js",
+                  "server/utils/intentRecognizer.js"
+                ],
+                "estimated_time_minutes": 20,
+                "completion_criteria": "Parser correctly identifies intents: ADD_TODO, COMPLETE_TODO, DELETE_TODO, LIST_TODOS, FILTER_TODOS, CLEAR_COMPLETED. Extracts task text and parameters from natural language input",
+                "dependencies": [
+                  "step_3"
+                ],
+                "step_type": "implementation"
+              },
+              "original_files_affected": [
+                "server/utils/messageParser.js",
+                "server/utils/intentRecognizer.js"
+              ]
+            }
+          },
+          "files_to_create": [
+            "server/utils/messageParser.js",
+            "server/utils/intentRecognizer.js"
+          ],
+          "files_to_modify": [],
+          "completion_criteria": "Parser correctly identifies intents: ADD_TODO, COMPLETE_TODO, DELETE_TODO, LIST_TODOS, FILTER_TODOS, CLEAR_COMPLETED. Extracts task text and parameters from natural language input",
+          "step_type": "implementation",
+          "extracted_via_llm": true,
+          "extraction_source": "plan_manager"
+        }
+      },
+      "machaao-integration-7f3a9c_step_5": {
+        "id": "machaao-integration-7f3a9c_step_5",
+        "title": "Create MACHAAO Service Layer",
+        "description": "Build service module for MACHAAO API interactions including sending messages, rich cards, quick replies, and handling user sessions",
+        "state": "pending",
+        "start_time": null,
+        "end_time": null,
+        "error_message": null,
+        "dependencies": [
+          "machaao-integration-7f3a9c_step_2"
+        ],
+        "estimated_duration": 18,
+        "actual_duration": null,
+        "progress_percentage": 0,
+        "metadata": {
+          "extracted_from_json": true,
+          "original_json_data": {
+            "id": "step_5",
+            "title": "Create MACHAAO Service Layer",
+            "description": "Build service module for MACHAAO API interactions including sending messages, rich cards, quick replies, and handling user sessions",
+            "files_affected": [
+              "server/services/machaaoService.js"
+            ],
+            "estimated_time_minutes": 18,
+            "completion_criteria": "Service methods implemented: sendTextMessage, sendRichCard, sendQuickReplies, getUserProfile, updateUserState. API authentication working correctly",
+            "dependencies": [
+              "step_2"
+            ],
+            "step_type": "implementation"
+          },
+          "original_files_affected": [
+            "server/services/machaaoService.js"
+          ],
+          "original_step_data": {
+            "id": "machaao-integration-7f3a9c_step_5",
+            "title": "Create MACHAAO Service Layer",
+            "description": "Build service module for MACHAAO API interactions including sending messages, rich cards, quick replies, and handling user sessions",
+            "estimated_duration": 18,
+            "files_to_create": [
+              "server/services/machaaoService.js"
+            ],
+            "files_to_modify": [],
+            "completion_criteria": "Service methods implemented: sendTextMessage, sendRichCard, sendQuickReplies, getUserProfile, updateUserState. API authentication working correctly",
+            "dependencies": [
+              "machaao-integration-7f3a9c_step_2"
+            ],
+            "step_type": "implementation",
+            "metadata": {
+              "extracted_from_json": true,
+              "original_json_data": {
+                "id": "step_5",
+                "title": "Create MACHAAO Service Layer",
+                "description": "Build service module for MACHAAO API interactions including sending messages, rich cards, quick replies, and handling user sessions",
+                "files_affected": [
+                  "server/services/machaaoService.js"
+                ],
+                "estimated_time_minutes": 18,
+                "completion_criteria": "Service methods implemented: sendTextMessage, sendRichCard, sendQuickReplies, getUserProfile, updateUserState. API authentication working correctly",
+                "dependencies": [
+                  "step_2"
+                ],
+                "step_type": "implementation"
+              },
+              "original_files_affected": [
+                "server/services/machaaoService.js"
+              ]
+            }
+          },
+          "files_to_create": [
+            "server/services/machaaoService.js"
+          ],
+          "files_to_modify": [],
+          "completion_criteria": "Service methods implemented: sendTextMessage, sendRichCard, sendQuickReplies, getUserProfile, updateUserState. API authentication working correctly",
+          "step_type": "implementation",
+          "extracted_via_llm": true,
+          "extraction_source": "plan_manager"
+        }
+      },
+      "machaao-integration-7f3a9c_step_6": {
+        "id": "machaao-integration-7f3a9c_step_6",
+        "title": "Implement Conversational Todo Controller",
+        "description": "Create controller to handle todo operations via chat commands. Process parsed intents and execute corresponding todo actions with conversational responses",
+        "state": "pending",
+        "start_time": null,
+        "end_time": null,
+        "error_message": null,
+        "dependencies": [
+          "machaao-integration-7f3a9c_step_4",
+          "machaao-integration-7f3a9c_step_5"
+        ],
+        "estimated_duration": 22,
+        "actual_duration": null,
+        "progress_percentage": 0,
+        "metadata": {
+          "extracted_from_json": true,
+          "original_json_data": {
+            "id": "step_6",
+            "title": "Implement Conversational Todo Controller",
+            "description": "Create controller to handle todo operations via chat commands. Process parsed intents and execute corresponding todo actions with conversational responses",
+            "files_affected": [
+              "server/controllers/todoController.js"
+            ],
+            "estimated_time_minutes": 22,
+            "completion_criteria": "Controller handles all todo operations: add, complete, delete, list, filter, clear. Returns formatted chat responses with success/error messages. Maintains user-specific todo lists",
+            "dependencies": [
+              "step_4",
+              "step_5"
+            ],
+            "step_type": "implementation"
+          },
+          "original_files_affected": [
+            "server/controllers/todoController.js"
+          ],
+          "original_step_data": {
+            "id": "machaao-integration-7f3a9c_step_6",
+            "title": "Implement Conversational Todo Controller",
+            "description": "Create controller to handle todo operations via chat commands. Process parsed intents and execute corresponding todo actions with conversational responses",
+            "estimated_duration": 22,
+            "files_to_create": [
+              "server/controllers/todoController.js"
+            ],
+            "files_to_modify": [],
+            "completion_criteria": "Controller handles all todo operations: add, complete, delete, list, filter, clear. Returns formatted chat responses with success/error messages. Maintains user-specific todo lists",
+            "dependencies": [
+              "machaao-integration-7f3a9c_step_4",
+              "machaao-integration-7f3a9c_step_5"
+            ],
+            "step_type": "implementation",
+            "metadata": {
+              "extracted_from_json": true,
+              "original_json_data": {
+                "id": "step_6",
+                "title": "Implement Conversational Todo Controller",
+                "description": "Create controller to handle todo operations via chat commands. Process parsed intents and execute corresponding todo actions with conversational responses",
+                "files_affected": [
+                  "server/controllers/todoController.js"
+                ],
+                "estimated_time_minutes": 22,
+                "completion_criteria": "Controller handles all todo operations: add, complete, delete, list, filter, clear. Returns formatted chat responses with success/error messages. Maintains user-specific todo lists",
+                "dependencies": [
+                  "step_4",
+                  "step_5"
+                ],
+                "step_type": "implementation"
+              },
+              "original_files_affected": [
+                "server/controllers/todoController.js"
+              ]
+            }
+          },
+          "files_to_create": [
+            "server/controllers/todoController.js"
+          ],
+          "files_to_modify": [],
+          "completion_criteria": "Controller handles all todo operations: add, complete, delete, list, filter, clear. Returns formatted chat responses with success/error messages. Maintains user-specific todo lists",
+          "step_type": "implementation",
+          "extracted_via_llm": true,
+          "extraction_source": "plan_manager"
+        }
+      },
+      "machaao-integration-7f3a9c_step_7": {
+        "id": "machaao-integration-7f3a9c_step_7",
+        "title": "Build Chat Message Formatters",
+        "description": "Create formatters to render todo lists, stats, and responses as rich MACHAAO messages with cards, buttons, and quick replies",
+        "state": "pending",
+        "start_time": null,
+        "end_time": null,
+        "error_message": null,
+        "dependencies": [
+          "machaao-integration-7f3a9c_step_5"
+        ],
+        "estimated_duration": 15,
+        "actual_duration": null,
+        "progress_percentage": 0,
+        "metadata": {
+          "extracted_from_json": true,
+          "original_json_data": {
+            "id": "step_7",
+            "title": "Build Chat Message Formatters",
+            "description": "Create formatters to render todo lists, stats, and responses as rich MACHAAO messages with cards, buttons, and quick replies",
+            "files_affected": [
+              "server/utils/messageFormatter.js"
+            ],
+            "estimated_time_minutes": 15,
+            "completion_criteria": "Formatters created for: todo list cards with checkboxes, stats summary, filter buttons as quick replies, confirmation messages. Messages display correctly in MACHAAO chat",
+            "dependencies": [
+              "step_5"
+            ],
+            "step_type": "implementation"
+          },
+          "original_files_affected": [
+            "server/utils/messageFormatter.js"
+          ],
+          "original_step_data": {
+            "id": "machaao-integration-7f3a9c_step_7",
+            "title": "Build Chat Message Formatters",
+            "description": "Create formatters to render todo lists, stats, and responses as rich MACHAAO messages with cards, buttons, and quick replies",
+            "estimated_duration": 15,
+            "files_to_create": [
+              "server/utils/messageFormatter.js"
+            ],
+            "files_to_modify": [],
+            "completion_criteria": "Formatters created for: todo list cards with checkboxes, stats summary, filter buttons as quick replies, confirmation messages. Messages display correctly in MACHAAO chat",
+            "dependencies": [
+              "machaao-integration-7f3a9c_step_5"
+            ],
+            "step_type": "implementation",
+            "metadata": {
+              "extracted_from_json": true,
+              "original_json_data": {
+                "id": "step_7",
+                "title": "Build Chat Message Formatters",
+                "description": "Create formatters to render todo lists, stats, and responses as rich MACHAAO messages with cards, buttons, and quick replies",
+                "files_affected": [
+                  "server/utils/messageFormatter.js"
+                ],
+                "estimated_time_minutes": 15,
+                "completion_criteria": "Formatters created for: todo list cards with checkboxes, stats summary, filter buttons as quick replies, confirmation messages. Messages display correctly in MACHAAO chat",
+                "dependencies": [
+                  "step_5"
+                ],
+                "step_type": "implementation"
+              },
+              "original_files_affected": [
+                "server/utils/messageFormatter.js"
+              ]
+            }
+          },
+          "files_to_create": [
+            "server/utils/messageFormatter.js"
+          ],
+          "files_to_modify": [],
+          "completion_criteria": "Formatters created for: todo list cards with checkboxes, stats summary, filter buttons as quick replies, confirmation messages. Messages display correctly in MACHAAO chat",
+          "step_type": "implementation",
+          "extracted_via_llm": true,
+          "extraction_source": "plan_manager"
+        }
+      },
+      "machaao-integration-7f3a9c_step_8": {
+        "id": "machaao-integration-7f3a9c_step_8",
+        "title": "Implement User State Management",
+        "description": "Create session management for user-specific todo data, conversation context, and filter preferences. Use in-memory store with optional Redis integration",
+        "state": "pending",
+        "start_time": null,
+        "end_time": null,
+        "error_message": null,
+        "dependencies": [
+          "machaao-integration-7f3a9c_step_3"
+        ],
+        "estimated_duration": 12,
+        "actual_duration": null,
+        "progress_percentage": 0,
+        "metadata": {
+          "extracted_from_json": true,
+          "original_json_data": {
+            "id": "step_8",
+            "title": "Implement User State Management",
+            "description": "Create session management for user-specific todo data, conversation context, and filter preferences. Use in-memory store with optional Redis integration",
+            "files_affected": [
+              "server/store/userStore.js",
+              "server/middleware/sessionMiddleware.js"
+            ],
+            "estimated_time_minutes": 12,
+            "completion_criteria": "User sessions persist across messages. Todo data isolated per user. Filter state maintained. Session cleanup after inactivity",
+            "dependencies": [
+              "step_3"
+            ],
+            "step_type": "implementation"
+          },
+          "original_files_affected": [
+            "server/store/userStore.js",
+            "server/middleware/sessionMiddleware.js"
+          ],
+          "original_step_data": {
+            "id": "machaao-integration-7f3a9c_step_8",
+            "title": "Implement User State Management",
+            "description": "Create session management for user-specific todo data, conversation context, and filter preferences. Use in-memory store with optional Redis integration",
+            "estimated_duration": 12,
+            "files_to_create": [
+              "server/store/userStore.js",
+              "server/middleware/sessionMiddleware.js"
+            ],
+            "files_to_modify": [],
+            "completion_criteria": "User sessions persist across messages. Todo data isolated per user. Filter state maintained. Session cleanup after inactivity",
+            "dependencies": [
+              "machaao-integration-7f3a9c_step_3"
+            ],
+            "step_type": "implementation",
+            "metadata": {
+              "extracted_from_json": true,
+              "original_json_data": {
+                "id": "step_8",
+                "title": "Implement User State Management",
+                "description": "Create session management for user-specific todo data, conversation context, and filter preferences. Use in-memory store with optional Redis integration",
+                "files_affected": [
+                  "server/store/userStore.js",
+                  "server/middleware/sessionMiddleware.js"
+                ],
+                "estimated_time_minutes": 12,
+                "completion_criteria": "User sessions persist across messages. Todo data isolated per user. Filter state maintained. Session cleanup after inactivity",
+                "dependencies": [
+                  "step_3"
+                ],
+                "step_type": "implementation"
+              },
+              "original_files_affected": [
+                "server/store/userStore.js",
+                "server/middleware/sessionMiddleware.js"
+              ]
+            }
+          },
+          "files_to_create": [
+            "server/store/userStore.js",
+            "server/middleware/sessionMiddleware.js"
+          ],
+          "files_to_modify": [],
+          "completion_criteria": "User sessions persist across messages. Todo data isolated per user. Filter state maintained. Session cleanup after inactivity",
+          "step_type": "implementation",
+          "extracted_via_llm": true,
+          "extraction_source": "plan_manager"
+        }
+      },
+      "machaao-integration-7f3a9c_step_9": {
+        "id": "machaao-integration-7f3a9c_step_9",
+        "title": "Transform React UI to Chat Interface",
+        "description": "Convert existing React components to render as MACHAAO chat interface. Replace TodoInput with message input, TodoList with chat bubbles, FilterButtons with quick replies",
+        "state": "pending",
+        "start_time": null,
+        "end_time": null,
+        "error_message": null,
+        "dependencies": [
+          "machaao-integration-7f3a9c_step_7"
+        ],
+        "estimated_duration": 20,
+        "actual_duration": null,
+        "progress_percentage": 0,
+        "metadata": {
+          "extracted_from_json": true,
+          "original_json_data": {
+            "id": "step_9",
+            "title": "Transform React UI to Chat Interface",
+            "description": "Convert existing React components to render as MACHAAO chat interface. Replace TodoInput with message input, TodoList with chat bubbles, FilterButtons with quick replies",
+            "files_affected": [
+              "src/App.jsx",
+              "src/components/ChatInterface.jsx",
+              "src/components/MessageBubble.jsx",
+              "src/components/QuickReplyButtons.jsx"
+            ],
+            "estimated_time_minutes": 20,
+            "completion_criteria": "UI displays as chat interface with message history, input box, quick reply buttons. Messages render with proper formatting. Chat scrolls to latest message",
+            "dependencies": [
+              "step_7"
+            ],
+            "step_type": "implementation"
+          },
+          "original_files_affected": [
+            "src/App.jsx",
+            "src/components/ChatInterface.jsx",
+            "src/components/MessageBubble.jsx",
+            "src/components/QuickReplyButtons.jsx"
+          ],
+          "original_step_data": {
+            "id": "machaao-integration-7f3a9c_step_9",
+            "title": "Transform React UI to Chat Interface",
+            "description": "Convert existing React components to render as MACHAAO chat interface. Replace TodoInput with message input, TodoList with chat bubbles, FilterButtons with quick replies",
+            "estimated_duration": 20,
+            "files_to_create": [
+              "src/components/ChatInterface.jsx",
+              "src/components/MessageBubble.jsx",
+              "src/components/QuickReplyButtons.jsx"
+            ],
+            "files_to_modify": [
+              "src/App.jsx"
+            ],
+            "completion_criteria": "UI displays as chat interface with message history, input box, quick reply buttons. Messages render with proper formatting. Chat scrolls to latest message",
+            "dependencies": [
+              "machaao-integration-7f3a9c_step_7"
+            ],
+            "step_type": "implementation",
+            "metadata": {
+              "extracted_from_json": true,
+              "original_json_data": {
+                "id": "step_9",
+                "title": "Transform React UI to Chat Interface",
+                "description": "Convert existing React components to render as MACHAAO chat interface. Replace TodoInput with message input, TodoList with chat bubbles, FilterButtons with quick replies",
+                "files_affected": [
+                  "src/App.jsx",
+                  "src/components/ChatInterface.jsx",
+                  "src/components/MessageBubble.jsx",
+                  "src/components/QuickReplyButtons.jsx"
+                ],
+                "estimated_time_minutes": 20,
+                "completion_criteria": "UI displays as chat interface with message history, input box, quick reply buttons. Messages render with proper formatting. Chat scrolls to latest message",
+                "dependencies": [
+                  "step_7"
+                ],
+                "step_type": "implementation"
+              },
+              "original_files_affected": [
+                "src/App.jsx",
+                "src/components/ChatInterface.jsx",
+                "src/components/MessageBubble.jsx",
+                "src/components/QuickReplyButtons.jsx"
+              ]
+            }
+          },
+          "files_to_create": [
+            "src/components/ChatInterface.jsx",
+            "src/components/MessageBubble.jsx",
+            "src/components/QuickReplyButtons.jsx"
+          ],
+          "files_to_modify": [
+            "src/App.jsx"
+          ],
+          "completion_criteria": "UI displays as chat interface with message history, input box, quick reply buttons. Messages render with proper formatting. Chat scrolls to latest message",
+          "step_type": "implementation",
+          "extracted_via_llm": true,
+          "extraction_source": "plan_manager"
+        }
+      },
+      "machaao-integration-7f3a9c_step_10": {
+        "id": "machaao-integration-7f3a9c_step_10",
+        "title": "Integrate Frontend with MACHAAO SDK",
+        "description": "Connect React frontend to MACHAAO messaging using client SDK. Implement message sending, receiving, and real-time updates",
+        "state": "pending",
+        "start_time": null,
+        "end_time": null,
+        "error_message": null,
+        "dependencies": [
+          "machaao-integration-7f3a9c_step_9",
+          "machaao-integration-7f3a9c_step_5"
+        ],
+        "estimated_duration": 18,
+        "actual_duration": null,
+        "progress_percentage": 0,
+        "metadata": {
+          "extracted_from_json": true,
+          "original_json_data": {
+            "id": "step_10",
+            "title": "Integrate Frontend with MACHAAO SDK",
+            "description": "Connect React frontend to MACHAAO messaging using client SDK. Implement message sending, receiving, and real-time updates",
+            "files_affected": [
+              "src/services/machaaoClient.js",
+              "src/hooks/useMachaaoChat.js"
+            ],
+            "estimated_time_minutes": 18,
+            "completion_criteria": "Frontend sends messages to MACHAAO. Receives and displays bot responses. Real-time message updates working. User authentication integrated",
+            "dependencies": [
+              "step_9",
+              "step_5"
+            ],
+            "step_type": "integration"
+          },
+          "original_files_affected": [
+            "src/services/machaaoClient.js",
+            "src/hooks/useMachaaoChat.js"
+          ],
+          "original_step_data": {
+            "id": "machaao-integration-7f3a9c_step_10",
+            "title": "Integrate Frontend with MACHAAO SDK",
+            "description": "Connect React frontend to MACHAAO messaging using client SDK. Implement message sending, receiving, and real-time updates",
+            "estimated_duration": 18,
+            "files_to_create": [],
+            "files_to_modify": [
+              "src/services/machaaoClient.js",
+              "src/hooks/useMachaaoChat.js"
+            ],
+            "completion_criteria": "Frontend sends messages to MACHAAO. Receives and displays bot responses. Real-time message updates working. User authentication integrated",
+            "dependencies": [
+              "machaao-integration-7f3a9c_step_9",
+              "machaao-integration-7f3a9c_step_5"
+            ],
+            "step_type": "integration",
+            "metadata": {
+              "extracted_from_json": true,
+              "original_json_data": {
+                "id": "step_10",
+                "title": "Integrate Frontend with MACHAAO SDK",
+                "description": "Connect React frontend to MACHAAO messaging using client SDK. Implement message sending, receiving, and real-time updates",
+                "files_affected": [
+                  "src/services/machaaoClient.js",
+                  "src/hooks/useMachaaoChat.js"
+                ],
+                "estimated_time_minutes": 18,
+                "completion_criteria": "Frontend sends messages to MACHAAO. Receives and displays bot responses. Real-time message updates working. User authentication integrated",
+                "dependencies": [
+                  "step_9",
+                  "step_5"
+                ],
+                "step_type": "integration"
+              },
+              "original_files_affected": [
+                "src/services/machaaoClient.js",
+                "src/hooks/useMachaaoChat.js"
+              ]
+            }
+          },
+          "files_to_create": [],
+          "files_to_modify": [
+            "src/services/machaaoClient.js",
+            "src/hooks/useMachaaoChat.js"
+          ],
+          "completion_criteria": "Frontend sends messages to MACHAAO. Receives and displays bot responses. Real-time message updates working. User authentication integrated",
+          "step_type": "integration",
+          "extracted_via_llm": true,
+          "extraction_source": "plan_manager"
+        }
+      },
+      "machaao-integration-7f3a9c_step_11": {
+        "id": "machaao-integration-7f3a9c_step_11",
+        "title": "Add Welcome Flow and Help Commands",
+        "description": "Implement onboarding conversation with welcome message, tutorial, and help command showing available todo operations",
+        "state": "pending",
+        "start_time": null,
+        "end_time": null,
+        "error_message": null,
+        "dependencies": [
+          "machaao-integration-7f3a9c_step_6"
+        ],
+        "estimated_duration": 10,
+        "actual_duration": null,
+        "progress_percentage": 0,
+        "metadata": {
+          "extracted_from_json": true,
+          "original_json_data": {
+            "id": "step_11",
+            "title": "Add Welcome Flow and Help Commands",
+            "description": "Implement onboarding conversation with welcome message, tutorial, and help command showing available todo operations",
+            "files_affected": [
+              "server/controllers/welcomeController.js",
+              "server/utils/helpMessages.js"
+            ],
+            "estimated_time_minutes": 10,
+            "completion_criteria": "New users receive welcome message with quick start guide. /help command shows all available commands. Examples provided for each operation",
+            "dependencies": [
+              "step_6"
+            ],
+            "step_type": "implementation"
+          },
+          "original_files_affected": [
+            "server/controllers/welcomeController.js",
+            "server/utils/helpMessages.js"
+          ],
+          "original_step_data": {
+            "id": "machaao-integration-7f3a9c_step_11",
+            "title": "Add Welcome Flow and Help Commands",
+            "description": "Implement onboarding conversation with welcome message, tutorial, and help command showing available todo operations",
+            "estimated_duration": 10,
+            "files_to_create": [
+              "server/controllers/welcomeController.js",
+              "server/utils/helpMessages.js"
+            ],
+            "files_to_modify": [],
+            "completion_criteria": "New users receive welcome message with quick start guide. /help command shows all available commands. Examples provided for each operation",
+            "dependencies": [
+              "machaao-integration-7f3a9c_step_6"
+            ],
+            "step_type": "implementation",
+            "metadata": {
+              "extracted_from_json": true,
+              "original_json_data": {
+                "id": "step_11",
+                "title": "Add Welcome Flow and Help Commands",
+                "description": "Implement onboarding conversation with welcome message, tutorial, and help command showing available todo operations",
+                "files_affected": [
+                  "server/controllers/welcomeController.js",
+                  "server/utils/helpMessages.js"
+                ],
+                "estimated_time_minutes": 10,
+                "completion_criteria": "New users receive welcome message with quick start guide. /help command shows all available commands. Examples provided for each operation",
+                "dependencies": [
+                  "step_6"
+                ],
+                "step_type": "implementation"
+              },
+              "original_files_affected": [
+                "server/controllers/welcomeController.js",
+                "server/utils/helpMessages.js"
+              ]
+            }
+          },
+          "files_to_create": [
+            "server/controllers/welcomeController.js",
+            "server/utils/helpMessages.js"
+          ],
+          "files_to_modify": [],
+          "completion_criteria": "New users receive welcome message with quick start guide. /help command shows all available commands. Examples provided for each operation",
+          "step_type": "implementation",
+          "extracted_via_llm": true,
+          "extraction_source": "plan_manager"
+        }
+      },
+      "machaao-integration-7f3a9c_step_12": {
+        "id": "machaao-integration-7f3a9c_step_12",
+        "title": "Update Build Configuration for Dual Mode",
+        "description": "Configure build scripts to support both standalone React app and MACHAAO chatbot modes. Update vite.config.js and add server start scripts",
+        "state": "pending",
+        "start_time": null,
+        "end_time": null,
+        "error_message": null,
+        "dependencies": [
+          "machaao-integration-7f3a9c_step_3",
+          "machaao-integration-7f3a9c_step_10"
+        ],
+        "estimated_duration": 10,
+        "actual_duration": null,
+        "progress_percentage": 0,
+        "metadata": {
+          "extracted_from_json": true,
+          "original_json_data": {
+            "id": "step_12",
+            "title": "Update Build Configuration for Dual Mode",
+            "description": "Configure build scripts to support both standalone React app and MACHAAO chatbot modes. Update vite.config.js and add server start scripts",
+            "files_affected": [
+              "vite.config.js",
+              "package.json",
+              "server.js"
+            ],
+            "estimated_time_minutes": 10,
+            "completion_criteria": "npm run dev starts both frontend and webhook server. npm run build creates production bundle. npm run server starts webhook only. Environment-based mode switching works",
+            "dependencies": [
+              "step_3",
+              "step_10"
+            ],
+            "step_type": "setup"
+          },
+          "original_files_affected": [
+            "vite.config.js",
+            "package.json",
+            "server.js"
+          ],
+          "original_step_data": {
+            "id": "machaao-integration-7f3a9c_step_12",
+            "title": "Update Build Configuration for Dual Mode",
+            "description": "Configure build scripts to support both standalone React app and MACHAAO chatbot modes. Update vite.config.js and add server start scripts",
+            "estimated_duration": 10,
+            "files_to_create": [
+              "server.js"
+            ],
+            "files_to_modify": [
+              "vite.config.js",
+              "package.json"
+            ],
+            "completion_criteria": "npm run dev starts both frontend and webhook server. npm run build creates production bundle. npm run server starts webhook only. Environment-based mode switching works",
+            "dependencies": [
+              "machaao-integration-7f3a9c_step_3",
+              "machaao-integration-7f3a9c_step_10"
+            ],
+            "step_type": "setup",
+            "metadata": {
+              "extracted_from_json": true,
+              "original_json_data": {
+                "id": "step_12",
+                "title": "Update Build Configuration for Dual Mode",
+                "description": "Configure build scripts to support both standalone React app and MACHAAO chatbot modes. Update vite.config.js and add server start scripts",
+                "files_affected": [
+                  "vite.config.js",
+                  "package.json",
+                  "server.js"
+                ],
+                "estimated_time_minutes": 10,
+                "completion_criteria": "npm run dev starts both frontend and webhook server. npm run build creates production bundle. npm run server starts webhook only. Environment-based mode switching works",
+                "dependencies": [
+                  "step_3",
+                  "step_10"
+                ],
+                "step_type": "setup"
+              },
+              "original_files_affected": [
+                "vite.config.js",
+                "package.json",
+                "server.js"
+              ]
+            }
+          },
+          "files_to_create": [
+            "server.js"
+          ],
+          "files_to_modify": [
+            "vite.config.js",
+            "package.json"
+          ],
+          "completion_criteria": "npm run dev starts both frontend and webhook server. npm run build creates production bundle. npm run server starts webhook only. Environment-based mode switching works",
+          "step_type": "setup",
+          "extracted_via_llm": true,
+          "extraction_source": "plan_manager"
+        }
+      },
+      "machaao-integration-7f3a9c_step_13": {
+        "id": "machaao-integration-7f3a9c_step_13",
+        "title": "Update Documentation for MACHAAO Integration",
+        "description": "Update README.md with MACHAAO setup instructions, bot configuration, deployment guide, and conversational command reference",
+        "state": "pending",
+        "start_time": null,
+        "end_time": null,
+        "error_message": null,
+        "dependencies": [
+          "machaao-integration-7f3a9c_step_12"
+        ],
+        "estimated_duration": 12,
+        "actual_duration": null,
+        "progress_percentage": 0,
+        "metadata": {
+          "extracted_from_json": true,
+          "original_json_data": {
+            "id": "step_13",
+            "title": "Update Documentation for MACHAAO Integration",
+            "description": "Update README.md with MACHAAO setup instructions, bot configuration, deployment guide, and conversational command reference",
+            "files_affected": [
+              "README.md",
+              "docs/MACHAAO_SETUP.md"
+            ],
+            "estimated_time_minutes": 12,
+            "completion_criteria": "README includes MACHAAO prerequisites, bot registration steps, environment setup, webhook configuration, and command examples. Separate detailed setup guide created",
+            "dependencies": [
+              "step_12"
+            ],
+            "step_type": "documentation"
+          },
+          "original_files_affected": [
+            "README.md",
+            "docs/MACHAAO_SETUP.md"
+          ],
+          "original_step_data": {
+            "id": "machaao-integration-7f3a9c_step_13",
+            "title": "Update Documentation for MACHAAO Integration",
+            "description": "Update README.md with MACHAAO setup instructions, bot configuration, deployment guide, and conversational command reference",
+            "estimated_duration": 12,
+            "files_to_create": [
+              "docs/MACHAAO_SETUP.md"
+            ],
+            "files_to_modify": [
+              "README.md"
+            ],
+            "completion_criteria": "README includes MACHAAO prerequisites, bot registration steps, environment setup, webhook configuration, and command examples. Separate detailed setup guide created",
+            "dependencies": [
+              "machaao-integration-7f3a9c_step_12"
+            ],
+            "step_type": "documentation",
+            "metadata": {
+              "extracted_from_json": true,
+              "original_json_data": {
+                "id": "step_13",
+                "title": "Update Documentation for MACHAAO Integration",
+                "description": "Update README.md with MACHAAO setup instructions, bot configuration, deployment guide, and conversational command reference",
+                "files_affected": [
+                  "README.md",
+                  "docs/MACHAAO_SETUP.md"
+                ],
+                "estimated_time_minutes": 12,
+                "completion_criteria": "README includes MACHAAO prerequisites, bot registration steps, environment setup, webhook configuration, and command examples. Separate detailed setup guide created",
+                "dependencies": [
+                  "step_12"
+                ],
+                "step_type": "documentation"
+              },
+              "original_files_affected": [
+                "README.md",
+                "docs/MACHAAO_SETUP.md"
+              ]
+            }
+          },
+          "files_to_create": [
+            "docs/MACHAAO_SETUP.md"
+          ],
+          "files_to_modify": [
+            "README.md"
+          ],
+          "completion_criteria": "README includes MACHAAO prerequisites, bot registration steps, environment setup, webhook configuration, and command examples. Separate detailed setup guide created",
+          "step_type": "documentation",
+          "extracted_via_llm": true,
+          "extraction_source": "plan_manager"
+        }
+      }
+    },
+    "plan_start_time": null,
+    "plan_end_time": null,
+    "last_updated": "2025-10-15T09:44:17.748009",
+    "version": "2.0",
+    "persistence_method": "atomic_json_write",
+    "langchain_summary": {
+      "total_llm_calls": 3,
+      "total_chain_calls": 0,
+      "total_tokens": 0,
+      "total_duration": 7.4529890000000005,
+      "has_langchain_data": true
+    },
+    "total_steps": 13,
+    "completed_steps": 0,
+    "failed_steps": 0,
+    "in_progress_steps": 1,
+    "overall_progress_percentage": 1.5384615384615385,
+    "total_estimated_duration": 185,
+    "step_details": [
+      {
+        "id": "machaao-integration-7f3a9c_step_1",
+        "title": "Install MACHAAO SDK and Dependencies",
+        "estimated_duration": 8,
+        "dependencies": []
+      },
+      {
+        "id": "machaao-integration-7f3a9c_step_2",
+        "title": "Configure MACHAAO Environment Variables",
+        "estimated_duration": 5,
+        "dependencies": [
+          "machaao-integration-7f3a9c_step_1"
+        ]
+      },
+      {
+        "id": "machaao-integration-7f3a9c_step_3",
+        "title": "Create MACHAAO Webhook Server",
+        "estimated_duration": 15,
+        "dependencies": [
+          "machaao-integration-7f3a9c_step_1",
+          "machaao-integration-7f3a9c_step_2"
+        ]
+      },
+      {
+        "id": "machaao-integration-7f3a9c_step_4",
+        "title": "Implement Message Parser and Intent Recognition",
+        "estimated_duration": 20,
+        "dependencies": [
+          "machaao-integration-7f3a9c_step_3"
+        ]
+      },
+      {
+        "id": "machaao-integration-7f3a9c_step_5",
+        "title": "Create MACHAAO Service Layer",
+        "estimated_duration": 18,
+        "dependencies": [
+          "machaao-integration-7f3a9c_step_2"
+        ]
+      },
+      {
+        "id": "machaao-integration-7f3a9c_step_6",
+        "title": "Implement Conversational Todo Controller",
+        "estimated_duration": 22,
+        "dependencies": [
+          "machaao-integration-7f3a9c_step_4",
+          "machaao-integration-7f3a9c_step_5"
+        ]
+      },
+      {
+        "id": "machaao-integration-7f3a9c_step_7",
+        "title": "Build Chat Message Formatters",
+        "estimated_duration": 15,
+        "dependencies": [
+          "machaao-integration-7f3a9c_step_5"
+        ]
+      },
+      {
+        "id": "machaao-integration-7f3a9c_step_8",
+        "title": "Implement User State Management",
+        "estimated_duration": 12,
+        "dependencies": [
+          "machaao-integration-7f3a9c_step_3"
+        ]
+      },
+      {
+        "id": "machaao-integration-7f3a9c_step_9",
+        "title": "Transform React UI to Chat Interface",
+        "estimated_duration": 20,
+        "dependencies": [
+          "machaao-integration-7f3a9c_step_7"
+        ]
+      },
+      {
+        "id": "machaao-integration-7f3a9c_step_10",
+        "title": "Integrate Frontend with MACHAAO SDK",
+        "estimated_duration": 18,
+        "dependencies": [
+          "machaao-integration-7f3a9c_step_9",
+          "machaao-integration-7f3a9c_step_5"
+        ]
+      },
+      {
+        "id": "machaao-integration-7f3a9c_step_11",
+        "title": "Add Welcome Flow and Help Commands",
+        "estimated_duration": 10,
+        "dependencies": [
+          "machaao-integration-7f3a9c_step_6"
+        ]
+      },
+      {
+        "id": "machaao-integration-7f3a9c_step_12",
+        "title": "Update Build Configuration for Dual Mode",
+        "estimated_duration": 10,
+        "dependencies": [
+          "machaao-integration-7f3a9c_step_3",
+          "machaao-integration-7f3a9c_step_10"
+        ]
+      },
+      {
+        "id": "machaao-integration-7f3a9c_step_13",
+        "title": "Update Documentation for MACHAAO Integration",
+        "estimated_duration": 12,
+        "dependencies": [
+          "machaao-integration-7f3a9c_step_12"
+        ]
+      }
+    ]
+  },
+  "archive_metadata": {
+    "status": "COMPLETED",
+    "reason": "completed",
+    "completed_date": "2025-10-15T09:45:26.565006",
+    "duration": "0:05:23.582909",
+    "progress_summary": "0/13 steps completed",
+    "additional_info": "",
+    "archived_from": "machaao-integration-7f3a9c.json",
+    "context_cleared": true,
+    "archived": true
+  }
+}
