@@ -27,14 +27,48 @@ git clone <your-repo-url>
 cd react-todo
 
 # Install dependencies
-npm install  # or pip install -r requirements.txt
+npm install
 ```
+
+### Configuration
+
+1. **Create a MACHAAO App**:
+   - Visit [MACHAAO Developer Portal](https://portal.messengerx.io)
+   - Create a new app and get your credentials
+
+2. **Set up environment variables**:
+   ```bash
+   # Copy the example file
+   cp .env.example .env
+   
+   # Edit .env and add your MACHAAO credentials:
+   # - MACHAAO_API_TOKEN
+   # - MACHAAO_APP_ID
+   # - MACHAAO_DEVELOPER_TOKEN
+   ```
 
 ### Running the Application
 
+**Development Mode** (Frontend + Backend):
 ```bash
-npm start  # or python app.py
+# Terminal 1: Start backend server
+npm run dev:server
+
+# Terminal 2: Start frontend dev server
+npm run dev
 ```
+
+**Production Mode**:
+```bash
+# Build and start
+npm run build
+npm start
+```
+
+The app will be available at:
+- Frontend: http://localhost:5173 (dev mode)
+- Backend API: http://localhost:3000
+- Production: http://localhost:3000 (serves both)
 
 ## Development with MACH-AI
 
