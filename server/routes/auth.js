@@ -4,9 +4,15 @@ import { logger } from '../utils/logger.js';
 
 const router = express.Router();
 
+// Helper function to slugify session key
+function slugifySessionKey(userId) {
+  // Replace hyphens and special chars with underscores for cleaner keys
+  return `session_${userId.replace(/-/g, '_')}`;
+}
+
 // Helper function to create session
 async function createSession(userId, userData) {
-  const sessionKey = `session:${userId}`;
+  const sessionKey = slugifySessionKey(userId);
   const sessionData = {
     userId,
     email: userData.email,

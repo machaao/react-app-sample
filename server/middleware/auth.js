@@ -1,6 +1,11 @@
 import { machaaoClient } from '../utils/machaaoClient.js';
 import { logger } from '../utils/logger.js';
 
+// Helper function to slugify session key (same as in auth.js)
+function slugifySessionKey(userId) {
+  return `session_${userId.replace(/-/g, '_')}`;
+}
+
 export async function authMiddleware(req, res, next) {
   try {
     const sessionId = req.headers['x-session-id'];
@@ -13,7 +18,7 @@ export async function authMiddleware(req, res, next) {
     }
 
     // Verify session exists in app-data
-    const sessionKey = `session:${sessionId}`;
+    const sessionKey = slugifySessionKey(sessionId);
     
     try {
       const sessionData = await machaaoClient.getAppData(sessionKey);
