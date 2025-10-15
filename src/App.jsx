@@ -131,7 +131,7 @@ function App() {
         </motion.div>
 
         <footer className="text-center mt-8 text-gray-500 text-sm">
-          <p>Built with ❤️ using React & Tailwind CSS</p>
+          <p>Built with &hearts; using React &amp; Tailwind CSS</p>
         </footer>
       </motion.div>
     </div>
