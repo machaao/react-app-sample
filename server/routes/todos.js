@@ -6,6 +6,11 @@ import { logger } from '../utils/logger.js';
 
 const router = express.Router();
 
+// Helper function to slugify keys
+function slugifyKey(key) {
+  return key.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
+}
+
 // Apply auth middleware to all routes
 router.use(authMiddleware);
 
@@ -13,7 +18,7 @@ router.use(authMiddleware);
 router.get('/', async (req, res) => {
   try {
     const userId = req.userId;
-    const todosKey = `todos:${userId}`;
+    const todosKey = slugifyKey(`todos_${userId}`);
 
     const result = await machaaoClient.getAppData(todosKey);
 
@@ -50,7 +55,7 @@ router.post('/', async (req, res) => {
       });
     }
 
-    const todosKey = `todos:${userId}`;
+    const todosKey = slugifyKey(`todos_${userId}`);
     
     // Get existing todos
     let todos = [];
@@ -91,7 +96,7 @@ router.put('/:id', async (req, res) => {
     const todoId = req.params.id;
     const updates = req.body;
     const userId = req.userId;
-    const todosKey = `todos:${userId}`;
+    const todosKey = slugifyKey(`todos_${userId}`);
 
     const result = await machaaoClient.getAppData(todosKey);
     let todos = result.data?.value || [];
@@ -131,7 +136,7 @@ router.delete('/:id', async (req, res) => {
   try {
     const todoId = req.params.id;
     const userId = req.userId;
-    const todosKey = `todos:${userId}`;
+    const todosKey = slugifyKey(`todos_${userId}`);
 
     const result = await machaaoClient.getAppData(todosKey);
     let todos = result.data?.value || [];
@@ -164,7 +169,7 @@ router.delete('/:id', async (req, res) => {
 router.delete('/completed/clear', async (req, res) => {
   try {
     const userId = req.userId;
-    const todosKey = `todos:${userId}`;
+    const todosKey = slugifyKey(`todos_${userId}`);
 
     const result = await machaaoClient.getAppData(todosKey);
     let todos = result.data?.value || [];
