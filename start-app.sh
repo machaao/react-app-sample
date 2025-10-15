@@ -104,9 +104,9 @@ else
 fi
 echo ""
 
-# Start backend server in background
+# Start backend server in background with console output
 echo "🎯 Starting backend API server on port 3000..."
-node server/index.js > /tmp/backend.log 2>&1 &
+node server/index.js 2>&1 | tee /tmp/backend.log &
 BACKEND_PID=$!
 
 # Wait a moment for backend to start
@@ -121,9 +121,9 @@ fi
 echo "✅ Backend server started (PID: $BACKEND_PID)"
 echo ""
 
-# Start frontend server in background
+# Start frontend server in background with console output
 echo "🎨 Starting frontend dev server on port 5173..."
-npm run dev > /tmp/frontend.log 2>&1 &
+npm run dev 2>&1 | tee /tmp/frontend.log &
 FRONTEND_PID=$!
 
 # Wait for frontend to start
@@ -146,7 +146,7 @@ echo "📱 Frontend:  http://localhost:5173"
 echo "🔌 Backend:   http://localhost:3000"
 echo "💚 Health:    http://localhost:3000/health"
 echo ""
-echo "📋 Logs:"
+echo "📋 Logs are displayed below and also saved to:"
 echo "   Backend:  /tmp/backend.log"
 echo "   Frontend: /tmp/frontend.log"
 echo ""
