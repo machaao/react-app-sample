@@ -37,15 +37,30 @@ class ApiClient {
 
     try {
       const response = await fetch(`${this.baseURL}${endpoint}`, config);
-      const data = await response.json();
-
+      
+      // Handle network errors
       if (!response.ok) {
-        throw new Error(data.message || 'Request failed');
+        let errorMessage = 'Request failed';
+        try {
+          const data = await response.json();
+          errorMessage = data.message || errorMessage;
+        } catch (e) {
+          // Response is not JSON
+          errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+        }
+        throw new Error(errorMessage);
       }
 
+      const data = await response.json();
       return data;
     } catch (error) {
-      console.error('API Error:', error);
+      // Network error or fetch failed
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        console.error('Network Error: Unable to connect to server');
+        throw new Error('Unable to connect to server. Please check your connection.');
+      }
+      
+      console.error('API Error:', error.message);
       throw error;
     }
   }

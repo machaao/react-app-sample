@@ -9,6 +9,22 @@ import { logger } from './utils/logger.js';
 
 dotenv.config();
 
+// Validate required environment variables
+const requiredEnvVars = [
+  'MACHAAO_API_BASE_URL',
+  'MACHAAO_APP_ID',
+  'MACHAAO_API_TOKEN',
+  'MACHAAO_DEVELOPER_TOKEN'
+];
+
+const missingEnvVars = requiredEnvVars.filter(varName => !process.env[varName]);
+
+if (missingEnvVars.length > 0) {
+  logger.error('❌ Missing required environment variables:', missingEnvVars.join(', '));
+  logger.error('Please check your .env file and ensure all MACHAAO credentials are configured.');
+  process.exit(1);
+}
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -19,13 +35,42 @@ const isProduction = process.env.NODE_ENV === 'production';
 // Trust proxy for MACHAAO cloud platform
 app.set('trust proxy', 1);
 
-// Middleware
-app.use(cors({
-  origin: isProduction 
-    ? ['https://*.dev.apps.machaao.com', 'https://*.apps.machaao.com']
-    : ['http://localhost:5173', 'http://localhost:3000'],
+// CORS configuration with proper wildcard handling
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    if (isProduction) {
+      // Check if origin matches MACHAAO domains
+      const allowedPatterns = [
+        /^https:\/\/.*\.dev\.apps\.machaao\.com$/,
+        /^https:\/\/.*\.apps\.machaao\.com$/,
+        /^https:\/\/.*\.machaao\.com$/
+      ];
+      
+      const isAllowed = allowedPatterns.some(pattern => pattern.test(origin));
+      
+      if (isAllowed) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    } else {
+      // Development: allow localhost
+      const allowedOrigins = ['http://localhost:5173', 'http://localhost:3000'];
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(null, true); // Allow all in development
+      }
+    }
+  },
   credentials: true
-}));
+};
+
+// Middleware
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

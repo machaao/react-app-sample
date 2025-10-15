@@ -14,9 +14,15 @@ async function createSession(userId, userData) {
     lastActivity: new Date().toISOString()
   };
   
-  await machaaoClient.setAppData(sessionKey, sessionData, {
-    ttl: 30 * 24 * 60 * 60 // 30 days
-  });
+  try {
+    await machaaoClient.setAppData(sessionKey, sessionData, {
+      ttl: 30 * 24 * 60 * 60 // 30 days
+    });
+    logger.info('Session created for user:', userId);
+  } catch (error) {
+    logger.error('Failed to create session:', error.message);
+    throw new Error('Failed to create session');
+  }
   
   return sessionData;
 }

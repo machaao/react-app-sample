@@ -1,4 +1,5 @@
 import express from 'express';
+import { randomUUID } from 'crypto';
 import { machaaoClient } from '../utils/machaaoClient.js';
 import { authMiddleware } from '../middleware/auth.js';
 import { logger } from '../utils/logger.js';
@@ -61,7 +62,7 @@ router.post('/', async (req, res) => {
     }
 
     const newTodo = {
-      id: Date.now(),
+      id: randomUUID(),
       text: text.trim(),
       completed: false,
       createdAt: new Date().toISOString()
@@ -87,7 +88,7 @@ router.post('/', async (req, res) => {
 // Update todo
 router.put('/:id', async (req, res) => {
   try {
-    const todoId = parseInt(req.params.id);
+    const todoId = req.params.id;
     const updates = req.body;
     const userId = req.userId;
     const todosKey = `todos:${userId}`;
@@ -128,7 +129,7 @@ router.put('/:id', async (req, res) => {
 // Delete todo
 router.delete('/:id', async (req, res) => {
   try {
-    const todoId = parseInt(req.params.id);
+    const todoId = req.params.id;
     const userId = req.userId;
     const todosKey = `todos:${userId}`;
 
